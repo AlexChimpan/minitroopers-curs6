@@ -7,13 +7,13 @@ import jakarta.enterprise.context.ApplicationScoped;
 import com.bmw.maintenance.domain.MaintenanceTask;
 
 /**
- * Maps between {@link MaintenanceTaskEntity} and {@link com.bmw.maintenance.domain.MaintenanceTask}.
+ * Maps between {@link MaintenanceTaskPanacheEntity} and {@link com.bmw.maintenance.domain.MaintenanceTask}.
  */
 @ApplicationScoped
-public class MaintenanceTaskMapperImpl implements MaintenanceTaskMapper<MaintenanceTaskEntity> {
+public class MaintenanceTaskPanacheMapperImpl implements MaintenanceTaskMapper<MaintenanceTaskPanacheEntity> {
 
     @Override
-    public MaintenanceTask toDomain(MaintenanceTaskEntity entity) {
+    public MaintenanceTask toDomain(MaintenanceTaskPanacheEntity entity) {
         return  MaintenanceTask.reconstitute(
                 entity.getId(),
                 entity.getVin(),
@@ -24,8 +24,8 @@ public class MaintenanceTaskMapperImpl implements MaintenanceTaskMapper<Maintena
     }
 
     @Override
-    public MaintenanceTaskEntity toEntity(MaintenanceTask task) {
-        return new MaintenanceTaskEntity(
+    public MaintenanceTaskPanacheEntity toEntity(MaintenanceTask task) {
+        return new MaintenanceTaskPanacheEntity(
                 task.getTaskId(),
                 task.getVin(),
                 task.getType(),

@@ -22,10 +22,10 @@ public class MaintenanceTaskInMemoryRepository implements MaintenanceTasks {
 
     private final Map<Long, MaintenanceTaskEntity> storage = new ConcurrentHashMap<>();
     private final AtomicLong idCounter = new AtomicLong(1L);
-    private final MaintenanceTaskMapper mapper;
+    private final MaintenanceTaskMapper<MaintenanceTaskEntity> mapper;
 
     @Inject
-    public MaintenanceTaskInMemoryRepository(MaintenanceTaskMapper mapper) {
+    public MaintenanceTaskInMemoryRepository(MaintenanceTaskMapper<MaintenanceTaskEntity> mapper) {
         this.mapper = mapper;
     }
 

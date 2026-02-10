@@ -14,19 +14,19 @@ import java.util.List;
 import java.util.stream.Collectors;
 
 @ApplicationScoped
-public class MaintenanceTaskDBRepository implements MaintenanceTasks,PanacheRepository<MaintenanceTaskEntity>{
+public class MaintenanceTaskDBRepository implements MaintenanceTasks,PanacheRepository<MaintenanceTaskPanacheEntity>{
 
-    private final MaintenanceTaskMapper mapper;
+    private final MaintenanceTaskMapper<MaintenanceTaskPanacheEntity> mapper;
 
     @Inject
-    public MaintenanceTaskDBRepository( MaintenanceTaskMapper mapper) {
+    public MaintenanceTaskDBRepository( MaintenanceTaskMapper<MaintenanceTaskPanacheEntity> mapper) {
         this.mapper = mapper;
     }
 
     @Override
     @Transactional
     public MaintenanceTask create(MaintenanceTask task) {
-        MaintenanceTaskEntity maintenanceTaskEntity=mapper.toEntity(task);
+        MaintenanceTaskPanacheEntity maintenanceTaskEntity=mapper.toEntity(task);
         persist(maintenanceTaskEntity);
         return mapper.toDomain(maintenanceTaskEntity);
     }
@@ -34,7 +34,7 @@ public class MaintenanceTaskDBRepository implements MaintenanceTasks,PanacheRepo
     @Override
     @Transactional
     public MaintenanceTask updateStatus(String taskId, TaskStatus newStatus) {
-        MaintenanceTaskEntity maintenanceTaskEntity=findById(Long.valueOf(taskId));
+        MaintenanceTaskPanacheEntity maintenanceTaskEntity=findById(Long.valueOf(taskId));
 
         if (maintenanceTaskEntity == null) {
             throw new NotFoundException("Task not found: " + taskId);
@@ -49,7 +49,7 @@ public class MaintenanceTaskDBRepository implements MaintenanceTasks,PanacheRepo
     @Override
     @Transactional
     public MaintenanceTask upsertNotes(String taskId, String notes) {
-        MaintenanceTaskEntity maintenanceTaskEntity=findById(Long.parseLong(taskId));
+        MaintenanceTaskPanacheEntity maintenanceTaskEntity=findById(Long.parseLong(taskId));
 
         if (maintenanceTaskEntity == null) {
             throw new NotFoundException("Task not found: " + taskId);
@@ -64,7 +64,7 @@ public class MaintenanceTaskDBRepository implements MaintenanceTasks,PanacheRepo
     @Override
     public MaintenanceTask findById(String taskId) {
 
-        MaintenanceTaskEntity maintenanceTaskEntity=findById(Long.parseLong(taskId));
+        MaintenanceTaskPanacheEntity maintenanceTaskEntity=findById(Long.parseLong(taskId));
 
         if(maintenanceTaskEntity == null){
             throw new NotFoundException("Task not found: "+taskId);
@@ -83,9 +83,8 @@ public class MaintenanceTaskDBRepository implements MaintenanceTasks,PanacheRepo
 
     @Override
     public List<MaintenanceTask> findByVin(String vin) {
-        return findAll()
+        return find("vin",vin)
                 .stream()
-                .filter(e->e.getVin().equals(vin))
                 .map(mapper::toDomain)
                 .collect(Collectors.toList());
     }

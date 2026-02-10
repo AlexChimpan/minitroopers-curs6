@@ -5,14 +5,14 @@ import com.bmw.maintenance.domain.MaintenanceTask;
 /**
  * Maps between {@link MaintenanceTask} domain objects and {@link MaintenanceTaskEntity} persistence entities\.
  */
-public interface MaintenanceTaskMapper {
+public interface MaintenanceTaskMapper<T> {
     /**
      * Converts a persistence entity to a domain object\.
      *
      * @param entity the persistence entity
      * @return the domain object
      */
-    MaintenanceTask toDomain(MaintenanceTaskEntity entity);
+    MaintenanceTask toDomain(T entity);
 
     /**
      * Converts a domain object to a persistence entity\.
@@ -20,5 +20,5 @@ public interface MaintenanceTaskMapper {
      * @param task the domain object
      * @return the persistence entity
      */
-    MaintenanceTaskEntity toEntity(MaintenanceTask task);
+    T toEntity(MaintenanceTask task);
 }
