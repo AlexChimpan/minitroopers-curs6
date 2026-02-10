@@ -5,6 +5,8 @@ import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
 
+import java.util.List;
+
 /**
  * Domain entity representing a maintenance task for a vehicle.
  * <p>
@@ -26,7 +28,9 @@ public class MaintenanceTask {
     private TaskType type;
     private TaskStatus status;
     private String notes;
-
+    private TirePosition tirePosition;
+    private List<String> errorCodes;
+    private ScannerType scannerType;
 
     /**
      * Creates a new oil change task in the \`IN\_PROGRESS\` status.
@@ -67,6 +71,48 @@ public class MaintenanceTask {
     }
 
     /**
+     * Creates a new tire service task in the IN_PROGRESS status
+     * @param vin vehicle identification number
+     * @param tirePosition tire that is checked
+     * @param notes optional notes for the task
+     * @return a new MaintenanceTask configured for tire service
+     * @throws IllegalStateException if required business rules are not met
+     */
+    public static MaintenanceTask createTireService(String vin, TirePosition tirePosition, String notes) {
+        MaintenanceTask task = MaintenanceTask.builder()
+                .vin(vin)
+                .type(TaskType.TIRE_SERVICE)
+                .status(TaskStatus.IN_PROGRESS)
+                .tirePosition(tirePosition)
+                .notes(notes)
+                .build();
+        task.validateBusinessRules();
+        return task;
+    }
+
+    /**
+     * Creates a new diagnostic scan task in the IN_PROGRESS status
+     * @param vin vehicle identification number
+     * @param scannerType the type of scanner used
+     * @param errorCodes the list of error codes reported by the scanner
+     * @param notes optional notes for the task
+     * @return a new MaintenanceTask configured for diagnostic scan
+     * @throws IllegalStateException if required business rules are not met
+     */
+    public static MaintenanceTask createDiagnosticScan(String vin, ScannerType scannerType, List<String> errorCodes, String notes) {
+        MaintenanceTask task = MaintenanceTask.builder()
+                .vin(vin)
+                .type(TaskType.DIAGNOSTIC_SCAN)
+                .status(TaskStatus.IN_PROGRESS)
+                .errorCodes(errorCodes)
+                .scannerType(scannerType)
+                .notes(notes)
+                .build();
+        task.validateBusinessRules();
+        return task;
+    }
+
+    /**
      * Reconstitutes a task from persisted state without applying business rules.
      *
      * @param taskId persisted task identifier
@@ -89,6 +135,12 @@ public class MaintenanceTask {
     private void validateBusinessRules() {
         if (type == null || status == null) {
             throw new IllegalStateException("Task must have a type and status");
+        }
+        if (type == TaskType.TIRE_SERVICE && tirePosition == null) {
+            throw new IllegalStateException("Tire service task must have a tirePosition set");
+        }
+        if (type == TaskType.DIAGNOSTIC_SCAN && (scannerType == null || errorCodes == null)) {
+            throw new IllegalStateException("Diagnostic scan task must have scannerType and errorCodes set");
         }
     }
 }
