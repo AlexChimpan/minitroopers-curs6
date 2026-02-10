@@ -4,12 +4,16 @@ import com.bmw.maintenance.domain.MaintenanceTask;
 import com.bmw.maintenance.domain.TaskStatus;
 import com.bmw.maintenance.domaininteraction.MaintenanceTasks;
 import io.quarkus.hibernate.orm.panache.PanacheRepository;
+import jakarta.enterprise.context.ApplicationScoped;
+import jakarta.transaction.Transactional;
 import jakarta.ws.rs.NotFoundException;
 
 import java.time.LocalDateTime;
 import java.util.List;
 
-public class MaintenanceTaskRepository implements PanacheRepository<MaintenanceTaskEntity>,MaintenanceTasks {
+@ApplicationScoped
+@Transactional
+public class MaintenanceTaskRepository implements PanacheRepository<MaintenanceTaskEntity>, MaintenanceTasks {
 
     private final MaintenanceTaskMapper mapper;
 
@@ -22,7 +26,6 @@ public class MaintenanceTaskRepository implements PanacheRepository<MaintenanceT
         MaintenanceTaskEntity entity = mapper.toEntity(task);
         entity.setCreatedAt(LocalDateTime.now());
 
-        persist(entity);
         return mapper.toDomain(entity);
     }
 
@@ -30,7 +33,7 @@ public class MaintenanceTaskRepository implements PanacheRepository<MaintenanceT
     public MaintenanceTask updateStatus(String taskId, TaskStatus newStatus) {
         MaintenanceTaskEntity entity = findById(Long.valueOf(taskId));
 
-        if(entity == null){
+        if (entity == null) {
             throw new NotFoundException("Task not found: " + taskId);
         }
 
@@ -42,12 +45,25 @@ public class MaintenanceTaskRepository implements PanacheRepository<MaintenanceT
 
     @Override
     public MaintenanceTask upsertNotes(String taskId, String notes) {
-        return null;
+        MaintenanceTaskEntity entity = findById(Long.valueOf(taskId));
+
+        if (entity == null) {
+            throw new NotFoundException("Task not found: " + taskId);
+        }
+
+        entity.setNotes(notes);
+        entity.setUpdatedAt(LocalDateTime.now());
+
+        return mapper.toDomain(entity);
     }
 
     @Override
     public MaintenanceTask findById(String taskId) {
-        return null;
+        MaintenanceTaskEntity entity = findById(Long.valueOf(taskId));
+        if (entity == null) {
+            throw new NotFoundException("Task not found: " + taskId);
+        }
+        return mapper.toDomain(entity);
     }
 
     @Override
