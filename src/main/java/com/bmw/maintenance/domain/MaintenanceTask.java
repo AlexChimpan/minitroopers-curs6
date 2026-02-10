@@ -72,9 +72,10 @@ public class MaintenanceTask {
 
     /**
      * Creates a new tire service task in the IN_PROGRESS status
-     * @param vin vehicle identification number
+     *
+     * @param vin          vehicle identification number
      * @param tirePosition tire that is checked
-     * @param notes optional notes for the task
+     * @param notes        optional notes for the task
      * @return a new MaintenanceTask configured for tire service
      * @throws IllegalStateException if required business rules are not met
      */
@@ -92,10 +93,11 @@ public class MaintenanceTask {
 
     /**
      * Creates a new diagnostic scan task in the IN_PROGRESS status
-     * @param vin vehicle identification number
+     *
+     * @param vin         vehicle identification number
      * @param scannerType the type of scanner used
-     * @param errorCodes the list of error codes reported by the scanner
-     * @param notes optional notes for the task
+     * @param errorCodes  the list of error codes reported by the scanner
+     * @param notes       optional notes for the task
      * @return a new MaintenanceTask configured for diagnostic scan
      * @throws IllegalStateException if required business rules are not met
      */
@@ -119,15 +121,21 @@ public class MaintenanceTask {
      * @param vin    vehicle identification number
      * @param type   task type
      * @param status task status
+     * @param tirePosition tire position
+     * @param scannerType scanner type
+     * @param errorCodes error codes
      * @param notes  optional notes for the task
      * @return a \`MaintenanceTask\` populated from stored values
      */
-    public static MaintenanceTask reconstitute(Long taskId, String vin, TaskType type, TaskStatus status, String notes) {
+    public static MaintenanceTask reconstitute(Long taskId, String vin, TaskType type, TaskStatus status, TirePosition tirePosition, ScannerType scannerType, List<String> errorCodes, String notes) {
         return MaintenanceTask.builder()
                 .taskId(taskId)
                 .vin(vin)
                 .type(type)
                 .status(status)
+                .tirePosition(tirePosition)
+                .scannerType(scannerType)
+                .errorCodes(errorCodes)
                 .notes(notes)
                 .build();
     }
