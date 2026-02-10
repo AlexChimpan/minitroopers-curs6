@@ -85,7 +85,7 @@ public class MaintenanceTaskInMemoryRepository implements MaintenanceTasks {
     }
 
     @Override
-    public List<MaintenanceTask> findAll() {
+    public List<MaintenanceTask> findAllTasks() {
         return storage.values().stream()
                 .map(mapper::toDomain)
                 .collect(Collectors.toList());
