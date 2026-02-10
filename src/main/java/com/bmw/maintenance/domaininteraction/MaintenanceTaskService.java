@@ -70,7 +70,7 @@ public class MaintenanceTaskService {
      * @return task or null if not found
      */
     public MaintenanceTask getTaskById(String taskId) {
-        return maintenanceTasks.findById(taskId);
+        return maintenanceTasks.findTaskById(taskId);
     }
 
     /**

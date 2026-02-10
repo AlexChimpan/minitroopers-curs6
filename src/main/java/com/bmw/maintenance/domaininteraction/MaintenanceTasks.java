@@ -41,7 +41,7 @@ public interface MaintenanceTasks {
      * @param taskId the task id
      * @return the found task
      */
-    MaintenanceTask findById(String taskId);
+    MaintenanceTask findTaskById(String taskId);
 
     /**
      * Returns all tasks.
