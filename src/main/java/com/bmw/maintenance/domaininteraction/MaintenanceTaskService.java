@@ -3,8 +3,11 @@ package com.bmw.maintenance.domaininteraction;
 import com.bmw.maintenance.domain.*;
 
 import java.util.List;
+import java.util.Map;
 
 import jakarta.enterprise.context.ApplicationScoped;
+import jakarta.enterprise.inject.Instance;
+import jakarta.inject.Inject;
 
 /**
  * Service for creating and managing maintenance tasks.
@@ -14,34 +17,36 @@ public class MaintenanceTaskService {
 
     private final MaintenanceTasks maintenanceTasks;
 
+    @Inject
+    private final Instance<MaintenanceTaskCreator> maintenanceTaskCreators;
+
     /**
      * Creates a new service instance.
      *
      * @param maintenanceTasks backing repository
      */
-    public MaintenanceTaskService(MaintenanceTasks maintenanceTasks) {
+    public MaintenanceTaskService(MaintenanceTasks maintenanceTasks, Instance<MaintenanceTaskCreator> maintenanceTaskCreators) {
         this.maintenanceTasks = maintenanceTasks;
+        this.maintenanceTaskCreators = maintenanceTaskCreators;
     }
 
     /**
      * Creates a maintenance task for a vehicle.
      *
-     * @param vin   vehicle identification number
-     * @param type  task type
-     * @param notes optional notes
-     * @param tirePosition tire position to be serviced if type is TIRE_SERVICE
-     * @param scannerType scanner used for diagnostics if type is DIAGNOSTIC_SCAN
-     * @param errorCodes error codes returned by scanner if type is DIAGNOSTIC_SCAN
+     * @param vin            vehicle identification number
+     * @param type           task type
+     * @param notes          optional notes
+     * @param additionalData additional fields needed for specialized task types
      * @return created task id
      */
-    public Long createTask(String vin, TaskType type, String notes, TirePosition tirePosition, List<String> errorCodes, ScannerType scannerType) {
-        MaintenanceTask task = switch (type) {
-            case OIL_CHANGE -> MaintenanceTask.createOilChange(vin, notes);
-            case BRAKE_INSPECTION -> MaintenanceTask.createBrakeInspection(vin, notes);
-            case TIRE_SERVICE -> MaintenanceTask.createTireService(vin, tirePosition, notes);
-            case DIAGNOSTIC_SCAN -> MaintenanceTask.createDiagnosticScan(vin, scannerType, errorCodes, notes);
-        };
+    public Long createTask(String vin, TaskType type, String notes, Map<String, Object> additionalData) {
+        MaintenanceTaskCreator creator = maintenanceTaskCreators
+                .stream()
+                .filter(c -> c.taskType() == type)
+                .findFirst()
+                .orElseThrow(() -> new IllegalStateException("No suitable creator found"));
 
+        MaintenanceTask task = creator.createTask(vin, notes, additionalData);
         MaintenanceTask created = maintenanceTasks.create(task);
         return created.getTaskId();
     }
