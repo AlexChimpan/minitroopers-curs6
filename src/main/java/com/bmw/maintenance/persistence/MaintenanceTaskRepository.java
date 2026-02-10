@@ -5,14 +5,12 @@ import com.bmw.maintenance.domain.TaskStatus;
 import com.bmw.maintenance.domaininteraction.MaintenanceTasks;
 import io.quarkus.hibernate.orm.panache.PanacheRepository;
 import jakarta.enterprise.context.ApplicationScoped;
-import jakarta.transaction.Transactional;
 import jakarta.ws.rs.NotFoundException;
 
 import java.time.LocalDateTime;
 import java.util.List;
 
 @ApplicationScoped
-@Transactional
 public class MaintenanceTaskRepository implements PanacheRepository<MaintenanceTaskEntity>, MaintenanceTasks {
 
     private final MaintenanceTaskMapper mapper;
@@ -25,7 +23,7 @@ public class MaintenanceTaskRepository implements PanacheRepository<MaintenanceT
     public MaintenanceTask create(MaintenanceTask task) {
         MaintenanceTaskEntity entity = mapper.toEntity(task);
         entity.setCreatedAt(LocalDateTime.now());
-
+        persist(entity);
         return mapper.toDomain(entity);
     }
 
