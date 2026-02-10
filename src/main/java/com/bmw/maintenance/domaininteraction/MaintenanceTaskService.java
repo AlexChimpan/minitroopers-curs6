@@ -79,10 +79,12 @@ public class MaintenanceTaskService {
      * @param vin vehicle identification number
      * @return matching tasks
      */
+
+    /*
     public List<MaintenanceTask> listTasks(String vin) {
         if (vin != null && !vin.isBlank()) {
             return maintenanceTasks.findByVin(vin);
         }
         return maintenanceTasks.findAll();
-    }
+    } */
 }
