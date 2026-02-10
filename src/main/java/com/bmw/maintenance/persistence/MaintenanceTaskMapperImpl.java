@@ -14,25 +14,35 @@ public class MaintenanceTaskMapperImpl implements MaintenanceTaskMapper {
 
     @Override
     public MaintenanceTask toDomain(MaintenanceTaskEntity entity) {
+        if (entity == null) return null;
+
         return  MaintenanceTask.reconstitute(
                 entity.getId(),
                 entity.getVin(),
                 entity.getType(),
                 entity.getStatus(),
-                entity.getNotes()
+                entity.getNotes(),
+                entity.getTirePosition(),
+                entity.getErrorCodes(),
+                entity.getScannerType()
         );
     }
 
     @Override
     public MaintenanceTaskEntity toEntity(MaintenanceTask task) {
-        return new MaintenanceTaskEntity(
-                task.getTaskId(),
-                task.getVin(),
-                task.getType(),
-                task.getStatus(),
-                task.getNotes(),
-                LocalDateTime.now(),
-                LocalDateTime.now()
-        );
+        if (task == null) return null;
+
+        MaintenanceTaskEntity entity = new MaintenanceTaskEntity();
+
+        entity.setId(task.getTaskId());
+        entity.setVin(task.getVin());
+        entity.setType(task.getType());
+        entity.setStatus(task.getStatus());
+        entity.setNotes(task.getNotes());
+        entity.setTirePosition(task.getTirePosition());
+        entity.setErrorCodes(task.getErrorCodes());
+        entity.setScannerType(task.getScannerType());
+
+        return entity;
     }
 }

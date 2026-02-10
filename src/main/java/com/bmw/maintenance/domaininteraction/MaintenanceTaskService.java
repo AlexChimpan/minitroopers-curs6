@@ -1,12 +1,13 @@
 package com.bmw.maintenance.domaininteraction;
 
-import com.bmw.maintenance.domain.MaintenanceTask;
-import com.bmw.maintenance.domain.TaskStatus;
-import com.bmw.maintenance.domain.TaskType;
+import com.bmw.maintenance.domain.*;
 
 import java.util.List;
+import java.util.Map;
 
 import jakarta.enterprise.context.ApplicationScoped;
+import jakarta.inject.Inject;
+import org.h2.api.ErrorCode;
 
 /**
  * Service for creating and managing maintenance tasks.
@@ -15,14 +16,17 @@ import jakarta.enterprise.context.ApplicationScoped;
 public class MaintenanceTaskService {
 
     private final MaintenanceTasks maintenanceTasks;
+    private final MaintenanceTaskCreatorRegistry registry;
 
     /**
      * Creates a new service instance.
      *
      * @param maintenanceTasks backing repository
      */
-    public MaintenanceTaskService(MaintenanceTasks maintenanceTasks) {
+    @Inject
+    public MaintenanceTaskService(MaintenanceTasks maintenanceTasks, MaintenanceTaskCreatorRegistry registry) {
         this.maintenanceTasks = maintenanceTasks;
+        this.registry = registry;
     }
 
     /**
@@ -33,11 +37,8 @@ public class MaintenanceTaskService {
      * @param notes optional notes
      * @return created task id
      */
-    public Long createTask(String vin, TaskType type, String notes) {
-        MaintenanceTask task = switch (type) {
-            case OIL_CHANGE -> MaintenanceTask.createOilChange(vin, notes);
-            case BRAKE_INSPECTION -> MaintenanceTask.createBrakeInspection(vin, notes);
-        };
+    public Long createTask(String vin, TaskType type, String notes, Map<String, Object> additionalData) {
+        MaintenanceTask task = registry.get(type).create(vin, notes, additionalData);
 
         MaintenanceTask created = maintenanceTasks.create(task);
         return created.getTaskId();
