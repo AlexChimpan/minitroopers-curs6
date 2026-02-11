@@ -4,6 +4,9 @@ import jakarta.enterprise.context.ApplicationScoped;
 
 import java.util.Map;
 
+/**
+ * Creator of brake inspection MaintenanceTask
+ */
 @ApplicationScoped
 public class BrakeInspectionMaintenanceTaskCreator implements MaintenanceTaskCreator {
 

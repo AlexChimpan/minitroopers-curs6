@@ -4,6 +4,9 @@ import jakarta.enterprise.context.ApplicationScoped;
 
 import java.util.Map;
 
+/**
+ * Creator of oil change MaintenanceTask
+ */
 @ApplicationScoped
 public class OilChangeMaintenanceTaskCreator implements MaintenanceTaskCreator {
     @Override

@@ -5,6 +5,9 @@ import jakarta.enterprise.context.ApplicationScoped;
 import java.util.List;
 import java.util.Map;
 
+/**
+ * Creator of diagnostic scan MaintenanceTask
+ */
 @ApplicationScoped
 public class DiagnosticScanMaintenanceTaskCreator implements MaintenanceTaskCreator {
     @Override
