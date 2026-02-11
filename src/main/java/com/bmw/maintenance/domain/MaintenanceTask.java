@@ -5,6 +5,8 @@ import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
 
+import java.util.List;
+
 /**
  * Domain entity representing a maintenance task for a vehicle.
  * <p>
@@ -26,6 +28,9 @@ public class MaintenanceTask {
     private TaskType type;
     private TaskStatus status;
     private String notes;
+    private TirePosition tirePosition;
+    private List<String> errorCodes;
+    private ScannerType scannerType;
 
 
     /**
@@ -76,19 +81,60 @@ public class MaintenanceTask {
      * @param notes  optional notes for the task
      * @return a \`MaintenanceTask\` populated from stored values
      */
-    public static MaintenanceTask reconstitute(Long taskId, String vin, TaskType type, TaskStatus status, String notes) {
+    public static MaintenanceTask reconstitute(Long taskId, String vin, TaskType type, TaskStatus status, String notes, TirePosition tirePosition,List<String> errorCodes, ScannerType scannerType) {
         return MaintenanceTask.builder()
                 .taskId(taskId)
                 .vin(vin)
                 .type(type)
                 .status(status)
                 .notes(notes)
+                .tirePosition(tirePosition)
+                .errorCodes(errorCodes)
+                .scannerType(scannerType)
                 .build();
+    }
+
+    public static MaintenanceTask createTireService(String vin,TirePosition tirePosition, String notes){
+        MaintenanceTask task = MaintenanceTask.builder()
+                .vin(vin)
+                .type(TaskType.TIRE_SERVICE)
+                .status(TaskStatus.IN_PROGRESS)
+                .notes(notes)
+                .tirePosition(tirePosition)
+                .build();
+        task.validateBusinessRules();
+        return task;
+    }
+
+    public static MaintenanceTask createDiagnosticScan(String vin, ScannerType scannerType, List<String> errorCodes, String notes){
+        MaintenanceTask task = MaintenanceTask.builder()
+                .vin(vin)
+                .type(TaskType.DIAGNOSTIC_SCAN)
+                .status(TaskStatus.IN_PROGRESS)
+                .notes(notes)
+                .scannerType(scannerType)
+                .errorCodes(errorCodes)
+                .build();
+        task.validateBusinessRules();
+        return task;
     }
 
     private void validateBusinessRules() {
         if (type == null || status == null) {
             throw new IllegalStateException("Task must have a type and status");
+        }
+        if(type == TaskType.TIRE_SERVICE){
+            if(tirePosition == null){
+                throw new IllegalStateException("TIRE_SERVICE requires tirePosition");
+            }
+        }
+        if (type == TaskType.DIAGNOSTIC_SCAN){
+            if (scannerType == null){
+                throw new IllegalStateException("DIAGNOSITC_SCAN requires scannerType");
+            }
+            if (errorCodes == null){
+                throw new IllegalStateException("DIAGNOSTIC_SCAN requires errorCodes (can be empty list, not null)");
+            }
         }
     }
 }
