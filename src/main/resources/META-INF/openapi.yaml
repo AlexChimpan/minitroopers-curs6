@@ -2,7 +2,7 @@ openapi: 3.0.3
 info:
   title: Maintenance Task API
   description: API for managing vehicle maintenance tasks
-  version: 1.0.0
+  version: 1.1.0
   contact:
     name: BMW Maintenance Team
 
@@ -40,6 +40,21 @@ paths:
                   vin: "WBA3B5C50DF123456"
                   type: "BRAKE_INSPECTION"
                   notes: "Annual brake inspection"
+              tireService:
+                summary: Tire Service Task
+                value:
+                  vin: "WBA3B5C50DF123456"
+                  type: "TIRE_SERVICE"
+                  notes: "Rotate front-left tire"
+                  tirePosition: "FRONT_LEFT"
+              diagnosticScan:
+                summary: Diagnostic Scan Task
+                value:
+                  vin: "WBA3B5C50DF123456"
+                  type: "DIAGNOSTIC_SCAN"
+                  notes: "Check engine light"
+                  errorCodes: ["P0420", "P0171"]
+                  scannerType: "ADVANCED"
       responses:
         '201':
           description: Task created successfully
@@ -130,14 +145,14 @@ paths:
             schema:
               $ref: '#/components/schemas/UpdateStatusRequest'
             examples:
+              inProgress:
+                summary: Mark as in progress
+                value:
+                  status: "IN_PROGRESS"
               completed:
                 summary: Mark as completed
                 value:
                   status: "COMPLETED"
-              cancelled:
-                summary: Cancel task
-                value:
-                  status: "CANCELLED"
       responses:
         '204':
           description: Status updated successfully
@@ -194,6 +209,7 @@ paths:
 
 components:
   schemas:
+
     CreateTaskRequest:
       type: object
       required:
@@ -212,6 +228,16 @@ components:
           type: string
           description: Additional notes for the task
           example: "Customer reported squeaking noise"
+        tirePosition:
+          $ref: '#/components/schemas/TirePosition'
+        errorCodes:
+          type: array
+          items:
+            type: string
+          description: Error codes detected during diagnostic scan
+          example: ["P0420", "P0171"]
+        scannerType:
+          $ref: '#/components/schemas/ScannerType'
 
     UpdateStatusRequest:
       type: object
@@ -249,21 +275,49 @@ components:
         notes:
           type: string
           example: "Regular maintenance"
+        tirePosition:
+          $ref: '#/components/schemas/TirePosition'
+        errorCodes:
+          type: array
+          items:
+            type: string
+          example: ["P0420", "P0171"]
+        scannerType:
+          $ref: '#/components/schemas/ScannerType'
 
     TaskType:
       type: string
       enum:
         - OIL_CHANGE
         - BRAKE_INSPECTION
+        - TIRE_SERVICE
+        - DIAGNOSTIC_SCAN
       description: Type of maintenance task
+
+    TirePosition:
+      type: string
+      enum:
+        - FRONT_LEFT
+        - FRONT_RIGHT
+        - REAR_LEFT
+        - REAR_RIGHT
+        - ALL
+      description: Tire position for tire service
+
+    ScannerType:
+      type: string
+      enum:
+        - BASIC
+        - ADVANCED
+      description: Scanner type used for diagnostic scan
 
     TaskStatus:
       type: string
       enum:
+        - PENDING
         - IN_PROGRESS
         - COMPLETED
         - CANCELLED
-        - PENDING
       description: Current status of the task
 
     ErrorResponse:

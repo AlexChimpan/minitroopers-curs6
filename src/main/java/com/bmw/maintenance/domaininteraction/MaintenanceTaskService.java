@@ -1,10 +1,9 @@
 package com.bmw.maintenance.domaininteraction;
 
-import com.bmw.maintenance.domain.MaintenanceTask;
-import com.bmw.maintenance.domain.TaskStatus;
-import com.bmw.maintenance.domain.TaskType;
+import com.bmw.maintenance.domain.*;
 
 import java.util.List;
+import java.util.Map;
 
 import jakarta.enterprise.context.ApplicationScoped;
 
@@ -33,10 +32,24 @@ public class MaintenanceTaskService {
      * @param notes optional notes
      * @return created task id
      */
+//    public Long createTask(String vin, TaskType type, String notes) {
+//        MaintenanceTask task = switch (type) {
+//            case OIL_CHANGE -> MaintenanceTask.createOilChange(vin, notes);
+//            case BRAKE_INSPECTION -> MaintenanceTask.createBrakeInspection(vin, notes);
+//            case TIRE_SERVICE -> null;        // astea nu trebuie sa fie null
+//            case DIAGNOSTIC_SCAN -> null;
+//        };
+//
+//        MaintenanceTask created = maintenanceTasks.create(task);
+//        return created.getTaskId();
+//    }
+
     public Long createTask(String vin, TaskType type, String notes) {
         MaintenanceTask task = switch (type) {
             case OIL_CHANGE -> MaintenanceTask.createOilChange(vin, notes);
             case BRAKE_INSPECTION -> MaintenanceTask.createBrakeInspection(vin, notes);
+            case TIRE_SERVICE -> null;
+            case DIAGNOSTIC_SCAN -> null;
         };
 
         MaintenanceTask created = maintenanceTasks.create(task);

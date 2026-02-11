@@ -5,6 +5,9 @@ import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
 
+import java.util.List;
+import java.util.Map;
+
 /**
  * Domain entity representing a maintenance task for a vehicle.
  * <p>
@@ -26,6 +29,13 @@ public class MaintenanceTask {
     private TaskType type;
     private TaskStatus status;
     private String notes;
+
+    // Tire service
+    private TirePosition tirePosition;
+
+    // Diagnostic Scan
+    private List<String> errorCodes;
+    private ScannerType scannerType;
 
 
     /**
@@ -91,4 +101,28 @@ public class MaintenanceTask {
             throw new IllegalStateException("Task must have a type and status");
         }
     }
+
+    public static MaintenanceTask createTireService(String vin, String notes, TirePosition tirePosition) {
+        return MaintenanceTask.builder()
+                .vin(vin)
+                .type(TaskType.TIRE_SERVICE)
+                .status(TaskStatus.IN_PROGRESS)
+                .tirePosition(tirePosition)
+                .notes(notes)
+                .build();
+
+    }
+
+    public static MaintenanceTask createDiagnosticScan(String vin, String notes, List<String> errorCodes, ScannerType scannerType
+    ) {
+        return MaintenanceTask.builder()
+                .vin(vin)
+                .type(TaskType.DIAGNOSTIC_SCAN)
+                .status(TaskStatus.IN_PROGRESS)
+                .errorCodes(errorCodes)
+                .scannerType(scannerType)
+                .notes(notes)
+                .build();
+    }
+
 }
