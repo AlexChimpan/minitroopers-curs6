@@ -33,13 +33,36 @@ paths:
                 value:
                   vin: "WBA3B5C50DF123456"
                   type: "OIL_CHANGE"
-                  notes: "Regular oil change service"
+                  notes: "Regular service"
+                  additionalData: {}
+
               brakeInspection:
                 summary: Brake Inspection Task
                 value:
                   vin: "WBA3B5C50DF123456"
                   type: "BRAKE_INSPECTION"
-                  notes: "Annual brake inspection"
+                  notes: "Annual brake check"
+                  additionalData: {}     # <-- FIXED HERE
+
+              tireService:
+                summary: Tire Service Task
+                value:
+                  vin: "WBA3B5C50DF123456"
+                  type: "TIRE_SERVICE"
+                  notes: "Adjust tire pressure"
+                  additionalData:
+                    tirePosition: "ALL"
+
+              diagnosticScan:
+                summary: Diagnostic Scan Task
+                value:
+                  vin: "WBA3B5C50DF123456"
+                  type: "DIAGNOSTIC_SCAN"
+                  notes: "Investigate engine warning light"
+                  additionalData:
+                    scannerType: "ADVANCED"
+                    errorCodes: ["P0171", "P0300"]
+
       responses:
         '201':
           description: Task created successfully
@@ -50,7 +73,7 @@ paths:
                 format: int64
               example: 12345
         '400':
-          description: Invalid request data
+          description: Invalid request
           content:
             application/json:
               schema:
@@ -64,7 +87,6 @@ paths:
       parameters:
         - name: vin
           in: query
-          description: Filter tasks by VIN
           required: false
           schema:
             type: string
@@ -90,7 +112,6 @@ paths:
       parameters:
         - name: taskId
           in: path
-          description: Task ID
           required: true
           schema:
             type: string
@@ -118,7 +139,6 @@ paths:
       parameters:
         - name: taskId
           in: path
-          description: Task ID
           required: true
           schema:
             type: string
@@ -131,11 +151,9 @@ paths:
               $ref: '#/components/schemas/UpdateStatusRequest'
             examples:
               completed:
-                summary: Mark as completed
                 value:
                   status: "COMPLETED"
               cancelled:
-                summary: Cancel task
                 value:
                   status: "CANCELLED"
       responses:
@@ -163,7 +181,6 @@ paths:
       parameters:
         - name: taskId
           in: path
-          description: Task ID
           required: true
           schema:
             type: string
@@ -175,7 +192,7 @@ paths:
             schema:
               $ref: '#/components/schemas/UpdateNotesRequest'
             example:
-              notes: "Parts replaced: oil filter, engine oil (5W-30)"
+              notes: "Service completed successfully"
       responses:
         '204':
           description: Notes updated successfully
@@ -194,6 +211,7 @@ paths:
 
 components:
   schemas:
+
     CreateTaskRequest:
       type: object
       required:
@@ -204,14 +222,33 @@ components:
           type: string
           minLength: 17
           maxLength: 17
-          description: Vehicle Identification Number
           example: "WBA3B5C50DF123456"
         type:
           $ref: '#/components/schemas/TaskType'
         notes:
           type: string
-          description: Additional notes for the task
           example: "Customer reported squeaking noise"
+        additionalData:
+          type: object
+          description: Extra parameters accepted by the maintenance type.
+          properties:
+            tirePosition:
+              type: string
+              enum: [FRONT_LEFT, FRONT_RIGHT, REAR_LEFT, REAR_RIGHT, ALL]
+              example: "FRONT_LEFT"
+            scannerType:
+              type: string
+              enum: [BASIC, ADVANCED]
+              example: "ADVANCED"
+            errorCodes:
+              type: array
+              items:
+                type: string
+              example: ["P0171", "P0300"]
+          example:
+            tirePosition: "FRONT_LEFT"
+            scannerType: "ADVANCED"
+            errorCodes: ["P0171", "P0300"]
 
     UpdateStatusRequest:
       type: object
@@ -228,8 +265,6 @@ components:
       properties:
         notes:
           type: string
-          minLength: 1
-          description: Task notes
           example: "Service completed successfully"
 
     MaintenanceTask:
@@ -238,24 +273,36 @@ components:
         taskId:
           type: integer
           format: int64
-          example: 12345
         vin:
           type: string
-          example: "WBA3B5C50DF123456"
         type:
           $ref: '#/components/schemas/TaskType'
         status:
           $ref: '#/components/schemas/TaskStatus'
         notes:
           type: string
-          example: "Regular maintenance"
+        additionalData:
+          type: object
+          properties:
+            tirePosition:
+              type: string
+              enum: [FRONT_LEFT, FRONT_RIGHT, REAR_LEFT, REAR_RIGHT, ALL]
+            scannerType:
+              type: string
+              enum: [BASIC, ADVANCED]
+            errorCodes:
+              type: array
+              items:
+                type: string
 
     TaskType:
       type: string
       enum:
         - OIL_CHANGE
         - BRAKE_INSPECTION
-      description: Type of maintenance task
+        - DIAGNOSTIC_SCAN
+        - TIRE_ROTATION
+        - TIRE_SERVICE
 
     TaskStatus:
       type: string
@@ -264,14 +311,12 @@ components:
         - COMPLETED
         - CANCELLED
         - PENDING
-      description: Current status of the task
 
     ErrorResponse:
       type: object
       properties:
         message:
           type: string
-          example: "Task not found with id: 12345"
         timestamp:
           type: string
           format: date-time

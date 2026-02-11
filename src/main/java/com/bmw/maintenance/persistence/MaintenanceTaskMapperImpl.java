@@ -19,7 +19,10 @@ public class MaintenanceTaskMapperImpl implements MaintenanceTaskMapper {
                 entity.getVin(),
                 entity.getType(),
                 entity.getStatus(),
-                entity.getNotes()
+                entity.getNotes(),
+                entity.getTirePosition(),
+                entity.getErrorCodes(),
+                entity.getScannerType()
         );
     }
 
@@ -32,7 +35,10 @@ public class MaintenanceTaskMapperImpl implements MaintenanceTaskMapper {
                 task.getStatus(),
                 task.getNotes(),
                 LocalDateTime.now(),
-                LocalDateTime.now()
+                LocalDateTime.now(),
+                task.getTirePosition(),
+                task.getErrorCodes(),
+                task.getScannerType()
         );
     }
 }

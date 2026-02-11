@@ -1,7 +1,9 @@
 package com.bmw.maintenance.api;
 
+import com.bmw.maintenance.domain.ScannerType;
 import com.bmw.maintenance.domain.TaskStatus;
 import com.bmw.maintenance.domain.TaskType;
+import com.bmw.maintenance.domain.TirePosition;
 import com.bmw.maintenance.domaininteraction.MaintenanceTaskService;
 
 import jakarta.enterprise.context.ApplicationScoped;
@@ -14,6 +16,7 @@ import jakarta.validation.constraints.Size;
 import jakarta.ws.rs.*;
 import jakarta.ws.rs.core.MediaType;
 import jakarta.ws.rs.core.Response;
+import java.util.Map;
 
 import lombok.NoArgsConstructor;
 
@@ -44,7 +47,7 @@ public class MaintenanceTaskResource {
     @POST
     @Path("/")
     public Response createTask(@Valid CreateTaskRequest request) {
-        Long taskId = maintenanceTaskService.createTask(request.vin(), request.type(), request.notes());
+        Long taskId = maintenanceTaskService.createTask(request.vin(), request.type(), request.notes(), request.additionalData());
 
         return Response.status(Response.Status.CREATED).entity(taskId).build();
     }
@@ -108,6 +111,7 @@ public class MaintenanceTaskResource {
      * @param vin vehicle identification number
      * @param type task type
      * @param notes optional notes
+     * @param additionalData additional data
      */
     public record CreateTaskRequest(
             @NotBlank
@@ -117,7 +121,9 @@ public class MaintenanceTaskResource {
             @NotNull
             TaskType type,
 
-            String notes
+            String notes,
+
+            Map<String, Object> additionalData
     ) {}
 
     /**

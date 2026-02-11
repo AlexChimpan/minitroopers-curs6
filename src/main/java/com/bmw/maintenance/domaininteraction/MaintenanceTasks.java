@@ -20,20 +20,18 @@ public interface MaintenanceTasks {
     /**
      * Updates the status of an existing task.
      *
-     * @param taskId the task id
+     * @param taskId    the task id
      * @param newStatus the new status
-     * @return the updated task
      */
-    MaintenanceTask updateStatus(String taskId, TaskStatus newStatus);
+    void updateStatus(String taskId, TaskStatus newStatus);
 
     /**
      * Inserts or updates the notes for a task.
      *
      * @param taskId the task id
-     * @param notes the notes to upsert
-     * @return the updated task
+     * @param notes  the notes to upsert
      */
-    MaintenanceTask upsertNotes(String taskId, String notes);
+    void upsertNotes(String taskId, String notes);
 
     /**
      * Finds a task by id.
@@ -48,7 +46,7 @@ public interface MaintenanceTasks {
      *
      * @return the list of tasks
      */
-    List<MaintenanceTask> findAll();
+    List<MaintenanceTask> findAllTasks();
 
     /**
      * Finds tasks by VIN.
