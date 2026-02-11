@@ -58,6 +58,20 @@
             <version>${lombok.version}</version>
             <scope>provided</scope>
         </dependency>
+
+        <!-- Added the panache dependency and H2 database dependency-->
+        <!-- Panache e ca un framework care face viata mai usoara cand lucrez cu quarkus-->
+
+        <dependency>
+            <groupId>io.quarkus</groupId>
+            <artifactId>quarkus-hibernate-orm-panache</artifactId>
+        </dependency>
+
+        <dependency>
+            <groupId>io.quarkus</groupId>
+            <artifactId>quarkus-jdbc-h2</artifactId>
+        </dependency>
+
     </dependencies>
 
     <build>

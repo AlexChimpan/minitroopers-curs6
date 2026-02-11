@@ -1,6 +1,7 @@
 package com.bmw.maintenance.persistence;
 
 import java.time.LocalDateTime;
+import java.util.ArrayList;
 
 import jakarta.enterprise.context.ApplicationScoped;
 
@@ -32,7 +33,10 @@ public class MaintenanceTaskMapperImpl implements MaintenanceTaskMapper {
                 task.getStatus(),
                 task.getNotes(),
                 LocalDateTime.now(),
-                LocalDateTime.now()
+                LocalDateTime.now(),
+                task.getTirePosition(),
+                (ArrayList<String>) task.getErrorCodes(),
+                task.getScannerType()
         );
     }
 }
