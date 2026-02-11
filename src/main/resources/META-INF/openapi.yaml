@@ -46,7 +46,7 @@ paths:
                   vin: "WBA3B5C50DF123456"
                   type: "TIRE_SERVICE"
                   notes: "Rotate tires"
-                  tireServiceDetails:
+                  additionalData:
                     tirePosition: "ALL"
               diagnosticScan:
                 summary: Diagnostic Scan Task
@@ -54,7 +54,7 @@ paths:
                   vin: "WBA3B5C50DF123456"
                   type: "DIAGNOSTIC_SCAN"
                   notes: "OBD-II scan"
-                  diagnosticScanDetails:
+                  additionalData:
                     scannerType: "ADVANCED"
                     errorCodes:
                       - "P0420"

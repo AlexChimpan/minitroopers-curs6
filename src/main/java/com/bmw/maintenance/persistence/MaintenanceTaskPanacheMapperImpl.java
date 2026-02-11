@@ -2,6 +2,8 @@ package com.bmw.maintenance.persistence;
 
 import java.time.LocalDateTime;
 
+import com.bmw.maintenance.domain.DiagnosticScanDetails;
+import com.bmw.maintenance.domain.TireServiceDetails;
 import jakarta.enterprise.context.ApplicationScoped;
 
 import com.bmw.maintenance.domain.MaintenanceTask;
@@ -19,7 +21,9 @@ public class MaintenanceTaskPanacheMapperImpl implements MaintenanceTaskMapper<M
                 entity.getVin(),
                 entity.getType(),
                 entity.getStatus(),
-                entity.getNotes()
+                entity.getNotes(),
+                entity.getTireServiceDetails() != null ? new TireServiceDetails(entity.getTireServiceDetails().getTirePosition()):null,
+                entity.getDiagnosticScanDetails() != null ? new DiagnosticScanDetails(entity.getDiagnosticScanDetails().getScannerType(), entity.getDiagnosticScanDetails().getErrorCodes()):null
         );
     }
 
@@ -31,6 +35,8 @@ public class MaintenanceTaskPanacheMapperImpl implements MaintenanceTaskMapper<M
                 task.getType(),
                 task.getStatus(),
                 task.getNotes(),
+                task.getTireServiceDetails() != null ? new TireServiceDetailsEmbeddable(task.getTireServiceDetails().getTirePosition()):null,
+                task.getDiagnosticScanDetails() != null ? new DiagnosticScanDetailsEmbeddable(task.getDiagnosticScanDetails().getScannerType(), task.getDiagnosticScanDetails().getErrorCodes()):null,
                 LocalDateTime.now(),
                 LocalDateTime.now()
         );

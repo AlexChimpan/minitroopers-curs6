@@ -1,6 +1,7 @@
 package com.bmw.maintenance.persistence;
 
 import com.bmw.maintenance.domain.MaintenanceTask;
+import com.bmw.maintenance.persistence.inMemory.MaintenanceTaskEntity;
 
 /**
  * Maps between {@link MaintenanceTask} domain objects and {@link MaintenanceTaskEntity} persistence entities\.

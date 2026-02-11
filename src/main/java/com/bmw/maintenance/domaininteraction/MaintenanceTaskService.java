@@ -3,7 +3,9 @@ package com.bmw.maintenance.domaininteraction;
 import com.bmw.maintenance.domain.*;
 
 import java.util.List;
+import java.util.Map;
 
+import com.bmw.maintenance.domain.creators.MaintenanceTaskCreator;
 import jakarta.enterprise.context.ApplicationScoped;
 
 /**
@@ -13,14 +15,16 @@ import jakarta.enterprise.context.ApplicationScoped;
 public class MaintenanceTaskService {
 
     private final MaintenanceTasks maintenanceTasks;
+    private final MaintenanceTaskCreatorFactory maintenanceTaskCreatorFactory;
 
     /**
      * Creates a new service instance.
      *
      * @param maintenanceTasks backing repository
      */
-    public MaintenanceTaskService(MaintenanceTasks maintenanceTasks) {
+    public MaintenanceTaskService(MaintenanceTasks maintenanceTasks,MaintenanceTaskCreatorFactory maintenanceTaskCreatorFactory) {
         this.maintenanceTasks = maintenanceTasks;
+        this.maintenanceTaskCreatorFactory=maintenanceTaskCreatorFactory;
     }
 
     /**
@@ -31,16 +35,12 @@ public class MaintenanceTaskService {
      * @param notes optional notes
      * @return created task id
      */
-    public Long createTask(String vin, TaskType type, String notes, TireServiceDetails tireServiceDetails, DiagnosticScanDetails diagnosticScanDetails) {
-        MaintenanceTask task = switch (type) {
-            case OIL_CHANGE -> MaintenanceTask.createOilChange(vin, notes);
-            case BRAKE_INSPECTION -> MaintenanceTask.createBrakeInspection(vin, notes);
-            case TIRE_SERVICE -> MaintenanceTask.createTireService(vin,notes,tireServiceDetails.getTirePosition());
-            case DIAGNOSTIC_SCAN -> MaintenanceTask.createDiagnosticScan(vin,notes,diagnosticScanDetails.getScannerType(),diagnosticScanDetails.getErrorCodes());
-        };
+    public Long createTask(String vin, TaskType type, String notes, Map<String, Object> additionalData) {
+        MaintenanceTaskCreator maintenanceTaskCreator=maintenanceTaskCreatorFactory.get(type);
 
-        MaintenanceTask created = maintenanceTasks.create(task);
-        return created.getTaskId();
+        MaintenanceTask created = maintenanceTaskCreator.create(vin,notes,additionalData);
+        MaintenanceTask saved=maintenanceTasks.create(created);
+        return saved.getTaskId();
     }
 
     /**

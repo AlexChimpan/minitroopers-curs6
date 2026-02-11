@@ -1,10 +1,12 @@
 package com.bmw.maintenance.persistence;
 
+import com.bmw.maintenance.domain.DiagnosticScanDetails;
 import com.bmw.maintenance.domain.TaskStatus;
 import com.bmw.maintenance.domain.TaskType;
 
 import java.time.LocalDateTime;
 
+import com.bmw.maintenance.domain.TireServiceDetails;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
@@ -39,6 +41,11 @@ public class MaintenanceTaskPanacheEntity {
     private TaskStatus status;
 
     private String notes;
+
+    @Embedded
+    private TireServiceDetailsEmbeddable tireServiceDetails;
+    @Embedded
+    private DiagnosticScanDetailsEmbeddable diagnosticScanDetails;
     private LocalDateTime createdAt;
     private LocalDateTime updatedAt;
 

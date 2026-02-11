@@ -1,4 +1,4 @@
-package com.bmw.maintenance.persistence;
+package com.bmw.maintenance.persistence.inMemory;
 
 import com.bmw.maintenance.domain.MaintenanceTask;
 import com.bmw.maintenance.domain.TaskStatus;
@@ -10,7 +10,7 @@ import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.atomic.AtomicLong;
 import java.util.stream.Collectors;
 
-import jakarta.enterprise.context.ApplicationScoped;
+import com.bmw.maintenance.persistence.MaintenanceTaskMapper;
 import jakarta.inject.Inject;
 import jakarta.ws.rs.NotFoundException;
 

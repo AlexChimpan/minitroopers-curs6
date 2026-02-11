@@ -1,7 +1,8 @@
-package com.bmw.maintenance.persistence;
+package com.bmw.maintenance.persistence.inMemory;
 
 import java.time.LocalDateTime;
 
+import com.bmw.maintenance.persistence.MaintenanceTaskMapper;
 import jakarta.enterprise.context.ApplicationScoped;
 
 import com.bmw.maintenance.domain.MaintenanceTask;
@@ -9,6 +10,7 @@ import com.bmw.maintenance.domain.MaintenanceTask;
 /**
  * Maps between {@link MaintenanceTaskEntity} and {@link com.bmw.maintenance.domain.MaintenanceTask}.
  */
+
 @ApplicationScoped
 public class MaintenanceTaskMapperImpl implements MaintenanceTaskMapper<MaintenanceTaskEntity> {
 

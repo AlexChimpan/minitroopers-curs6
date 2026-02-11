@@ -1,4 +1,4 @@
-package com.bmw.maintenance.persistence;
+package com.bmw.maintenance.persistence.inMemory;
 
 import com.bmw.maintenance.domain.DiagnosticScanDetails;
 import com.bmw.maintenance.domain.TaskStatus;
