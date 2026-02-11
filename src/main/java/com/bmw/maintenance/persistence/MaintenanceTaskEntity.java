@@ -26,6 +26,7 @@ import lombok.Setter;
 @AllArgsConstructor
 
 // Panache ofera direct campul id
+// Clasa asta e reprezentarea obiectului pentru baza de date
 @Entity
 public class MaintenanceTaskEntity extends PanacheEntity {
 
