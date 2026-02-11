@@ -1,7 +1,8 @@
-package com.bmw.maintenance.persistence;
+package com.bmw.maintenance.persistence.mapper;
 
 import java.time.LocalDateTime;
 
+import com.bmw.maintenance.persistence.MaintenanceTaskEntity;
 import jakarta.enterprise.context.ApplicationScoped;
 
 import com.bmw.maintenance.domain.MaintenanceTask;
