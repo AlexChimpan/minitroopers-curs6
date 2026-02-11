@@ -10,14 +10,12 @@ import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.atomic.AtomicLong;
 import java.util.stream.Collectors;
 
-import jakarta.enterprise.context.ApplicationScoped;
 import jakarta.inject.Inject;
 import jakarta.ws.rs.NotFoundException;
 
 /**
  * In-memory implementation of {@link MaintenanceTasks} for managing maintenance tasks.
  */
-@ApplicationScoped
 public class MaintenanceTaskInMemoryRepository implements MaintenanceTasks {
 
     private final Map<Long, MaintenanceTaskEntity> storage = new ConcurrentHashMap<>();
@@ -52,7 +50,7 @@ public class MaintenanceTaskInMemoryRepository implements MaintenanceTasks {
     }
 
     @Override
-    public MaintenanceTask updateStatus(String taskId, TaskStatus newStatus) {
+    public void updateStatus(String taskId, TaskStatus newStatus) {
         Long id = Long.parseLong(taskId);
         MaintenanceTaskEntity entity = storage.get(id);
 
@@ -64,11 +62,11 @@ public class MaintenanceTaskInMemoryRepository implements MaintenanceTasks {
         entity.setUpdatedAt(LocalDateTime.now());
 
         storage.put(id, entity);
-        return mapper.toDomain(entity);
+        mapper.toDomain(entity);
     }
 
     @Override
-    public MaintenanceTask upsertNotes(String taskId, String notes) {
+    public void upsertNotes(String taskId, String notes) {
         Long id = Long.parseLong(taskId);
         MaintenanceTaskEntity entity = storage.get(id);
 
@@ -81,11 +79,11 @@ public class MaintenanceTaskInMemoryRepository implements MaintenanceTasks {
 
         storage.put(id, entity);
 
-        return mapper.toDomain(entity);
+        mapper.toDomain(entity);
     }
 
     @Override
-    public List<MaintenanceTask> findAll() {
+    public List<MaintenanceTask> findAllTasks() {
         return storage.values().stream()
                 .map(mapper::toDomain)
                 .collect(Collectors.toList());
