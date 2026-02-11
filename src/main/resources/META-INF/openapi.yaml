@@ -40,6 +40,21 @@ paths:
                   vin: "WBA3B5C50DF123456"
                   type: "BRAKE_INSPECTION"
                   notes: "Annual brake inspection"
+              tireService:
+                summary: Tire Service Task
+                value:
+                  vin: "WBA3B5C50DF123456"
+                  type: "TIRE_SERVICE"
+                  tirePosition: "ALL"
+                  notes: "Winter tires change service"
+              diagnosticScan:
+                summary: Diagnostic Scan Task
+                value:
+                  vin: "WBA3B5C50DF123456"
+                  type: "DIAGNOSTIC_SCAN"
+                  scannerType: "ADVANCED"
+                  errorCodes: ["P0300", "P0171"]
+                  notes: "Check engine light is on"
       responses:
         '201':
           description: Task created successfully
