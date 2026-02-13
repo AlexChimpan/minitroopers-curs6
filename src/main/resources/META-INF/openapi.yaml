@@ -45,15 +45,17 @@ paths:
                 value:
                   vin: "WBA3B5C50DF123456"
                   type: "TIRE_SERVICE"
-                  tirePosition: "FRONT_LEFT"
+                  additionalData:
+                    tirePosition: "FRONT_LEFT"
                   notes: "Rotate tire and check alignment"
               diagnosticScan:
                 summary: Diagnostic Scan Task
                 value:
                   vin: "WBA3B5C50DF123456"
                   type: "DIAGNOSTIC_SCAN"
-                  errorCodes: [ "P0300", "P0420" ]
-                  scannerType: "BASIC"
+                  additionalData:
+                    errorCodes: [ "P0300", "P0420" ]
+                    scannerType: "BASIC"
                   notes: "Customer reports rough idle"
       responses:
         '201':
@@ -145,14 +147,18 @@ paths:
             schema:
               $ref: '#/components/schemas/UpdateStatusRequest'
             examples:
+              inProgress:
+                summary: Mark as in progress
+                value:
+                  status: "IN_PROGRESS"
               completed:
                 summary: Mark as completed
                 value:
                   status: "COMPLETED"
-              cancelled:
-                summary: Cancel task
+              created:
+                summary: Mark as created (default)
                 value:
-                  status: "CANCELLED"
+                  status: "CREATED"
       responses:
         '204':
           description: Status updated successfully

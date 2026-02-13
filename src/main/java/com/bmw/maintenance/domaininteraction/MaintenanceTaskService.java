@@ -2,8 +2,11 @@ package com.bmw.maintenance.domaininteraction;
 
 import com.bmw.maintenance.domain.*;
 import jakarta.enterprise.context.ApplicationScoped;
+import jakarta.enterprise.inject.Instance;
+import jakarta.enterprise.inject.literal.NamedLiteral;
 
 import java.util.List;
+import java.util.Map;
 
 /**
  * Service for creating and managing maintenance tasks.
@@ -12,14 +15,15 @@ import java.util.List;
 public class MaintenanceTaskService {
 
     private final MaintenanceTasks maintenanceTasks;
-
+    private final Instance<MaintenanceTaskFactory> factory;
     /**
      * Creates a new service instance.
      *
      * @param maintenanceTasks backing repository
      */
-    public MaintenanceTaskService(MaintenanceTasks maintenanceTasks) {
+    public MaintenanceTaskService(MaintenanceTasks maintenanceTasks, Instance<MaintenanceTaskFactory> factory) {
         this.maintenanceTasks = maintenanceTasks;
+        this.factory = factory;
     }
 
     /**
@@ -28,18 +32,10 @@ public class MaintenanceTaskService {
      * @param vin           vehicle identification number
      * @param type          task type
      * @param notes         optional notes
-     * @param tirePosition  required for TIRE_SERVICE task type
-     * @param errorCodes    required for DIAGNOSTIC_SCAN task type
-     * @param scannerType   required for DIAGNOSTIC_SCAN task type
      * @return created task id
      */
-    public Long createTask(String vin, TaskType type, String notes, TirePosition tirePosition, List<String> errorCodes, ScannerType scannerType) {
-        MaintenanceTask task = switch (type) {
-            case OIL_CHANGE -> MaintenanceTask.createOilChange(vin, notes);
-            case BRAKE_INSPECTION -> MaintenanceTask.createBrakeInspection(vin, notes);
-            case TIRE_SERVICE -> MaintenanceTask.createTireService(vin, notes, tirePosition);
-            case DIAGNOSTIC_SCAN -> MaintenanceTask.createDiagnosticScan(vin, notes, errorCodes, scannerType);
-        };
+    public Long createTask(String vin, TaskType type, String notes, Map<String, Object> additionalData) {
+        MaintenanceTask task = factory.select(NamedLiteral.of(type.toString())).get().create(vin, type, notes, additionalData);
 
         MaintenanceTask created = maintenanceTasks.create(task);
         return created.getTaskId();
