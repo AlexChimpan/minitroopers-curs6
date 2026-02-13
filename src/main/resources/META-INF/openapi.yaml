@@ -40,6 +40,21 @@ paths:
                   vin: "WBA3B5C50DF123456"
                   type: "BRAKE_INSPECTION"
                   notes: "Annual brake inspection"
+              tireService:
+                summary: Tire Service Task
+                value:
+                  vin: "WBA3B5C50DF123456"
+                  type: "TIRE_SERVICE"
+                  tirePosition: "FRONT_LEFT"
+                  notes: "Front left tire replacement"
+              diagnosticScan:
+                summary: Diagnostic Scan Task
+                value:
+                  vin: "WBA3B5C50DF123456"
+                  type: "DIAGNOSTIC_SCAN"
+                  errorCodes: ["P0420", "P0171"]
+                  scannerType: "ADVANCED"
+                  notes: "Check engine light ON"
       responses:
         '201':
           description: Task created successfully
@@ -210,8 +225,18 @@ components:
           $ref: '#/components/schemas/TaskType'
         notes:
           type: string
-          description: Additional notes for the task
+          description: Additional notes
           example: "Customer reported squeaking noise"
+        tirePosition:
+          $ref: '#/components/schemas/TirePosition'
+        errorCodes:
+          type: array
+          items:
+            type: string
+          description: Error codes found during diagnostic scan
+          example: ["P0420", "P0171"]
+        scannerType:
+          $ref: '#/components/schemas/ScannerType'
 
     UpdateStatusRequest:
       type: object
@@ -249,13 +274,40 @@ components:
         notes:
           type: string
           example: "Regular maintenance"
+        tirePosition:
+          $ref: '#/components/schemas/TirePosition'
+        errorCodes:
+          type: array
+          items:
+            type: string
+        scannerType:
+          $ref: '#/components/schemas/ScannerType'
 
     TaskType:
       type: string
       enum:
         - OIL_CHANGE
         - BRAKE_INSPECTION
+        - TIRE_SERVICE
+        - DIAGNOSTIC_SCAN
       description: Type of maintenance task
+
+    TirePosition:
+      type: string
+      enum:
+        - FRONT_LEFT
+        - FRONT_RIGHT
+        - REAR_LEFT
+        - REAR_RIGHT
+        - ALL
+      description: Tire position for tire service tasks
+
+    ScannerType:
+      type: string
+      enum:
+        - BASIC
+        - ADVANCED
+      description: Diagnostic scanner type
 
     TaskStatus:
       type: string
@@ -264,7 +316,7 @@ components:
         - COMPLETED
         - CANCELLED
         - PENDING
-      description: Current status of the task
+      description: Current task status
 
     ErrorResponse:
       type: object
