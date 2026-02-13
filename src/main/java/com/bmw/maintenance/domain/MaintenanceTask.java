@@ -1,11 +1,15 @@
 package com.bmw.maintenance.domain;
 
+import com.bmw.maintenance.domain.DiagnosticScan.ErrorCodes;
+import com.bmw.maintenance.domain.DiagnosticScan.ScannerType;
 import com.bmw.maintenance.domain.TireTask.TirePosition;
 import com.bmw.maintenance.domain.TireTask.TireServiceType;
 import lombok.AccessLevel;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
+
+import java.util.Set;
 
 /**
  * Domain entity representing a maintenance task for a vehicle.
@@ -28,6 +32,8 @@ public class MaintenanceTask {
     private TaskType type;
     private TirePosition tirePosition;
     private TireServiceType tireServiceType;
+    private ScannerType scannerType;
+    private Set<ErrorCodes> errorCodes;
     private TaskStatus status;
     private String notes;
 
@@ -64,6 +70,19 @@ public class MaintenanceTask {
         return task;
     }
 
+    public static MaintenanceTask createDiagnosticScanService(String vin, String notes, ScannerType scannerType, Set<ErrorCodes> errorCodes){
+        MaintenanceTask task = MaintenanceTask.builder()
+                .vin(vin)
+                .type(TaskType.DIAGNOSTIC_SCAN)
+                .status(TaskStatus.IN_PROGRESS)
+                .scannerType(ScannerType.valueOf(String.valueOf(scannerType)))
+                .errorCodes(errorCodes)
+                .notes(notes)
+                .build();
+        task.validateBusinessRules();
+        return task;
+    }
+
     /**
      * Creates a new brake inspection task in the \`IN\_PROGRESS\` status.
      *
@@ -93,7 +112,7 @@ public class MaintenanceTask {
      * @param notes  optional notes for the task
      * @return a \`MaintenanceTask\` populated from stored values
      */
-    public static MaintenanceTask reconstitute(Long taskId, String vin, TaskType type, TaskStatus status, TirePosition tirePosition, TireServiceType tireServiceType, String notes) {
+    public static MaintenanceTask reconstitute(Long taskId, String vin, TaskType type, TaskStatus status, TirePosition tirePosition, TireServiceType tireServiceType,ScannerType scannerType,Set<ErrorCodes> errorCodes, String notes) {
         return MaintenanceTask.builder()
                 .taskId(taskId)
                 .vin(vin)
@@ -101,6 +120,8 @@ public class MaintenanceTask {
                 .status(status)
                 .tireServiceType(tireServiceType)
                 .tirePosition(tirePosition)
+                .scannerType(scannerType)
+                .errorCodes(errorCodes)
                 .notes(notes)
                 .build();
     }

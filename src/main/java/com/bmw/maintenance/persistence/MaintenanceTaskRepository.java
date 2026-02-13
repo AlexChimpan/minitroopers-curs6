@@ -12,7 +12,6 @@ import jakarta.ws.rs.NotFoundException;
 
 import java.time.LocalDateTime;
 import java.util.List;
-import java.util.concurrent.atomic.AtomicLong;
 import java.util.stream.Collectors;
 
 @ApplicationScoped

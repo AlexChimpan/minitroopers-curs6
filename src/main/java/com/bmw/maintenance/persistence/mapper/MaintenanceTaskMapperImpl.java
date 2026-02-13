@@ -20,6 +20,8 @@ public class MaintenanceTaskMapperImpl implements MaintenanceTaskMapper {
                 schema.getStatus(),
                 schema.getTirePosition(),
                 schema.getTireServiceType(),
+                schema.getScannerType(),
+                schema.getErrorCodes(),
                 schema.getNotes()
         );
     }
@@ -33,6 +35,8 @@ public class MaintenanceTaskMapperImpl implements MaintenanceTaskMapper {
         schema.setStatus(task.getStatus());
         schema.setTirePosition(task.getTirePosition());
         schema.setTireServiceType(task.getTireServiceType());
+        schema.setScannerType(task.getScannerType());
+        schema.setErrorCodes(task.getErrorCodes());
         schema.setNotes(task.getNotes());
 
         return schema;
