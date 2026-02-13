@@ -1,12 +1,12 @@
 package com.bmw.maintenance.domaininteraction;
 
-import com.bmw.maintenance.domain.MaintenanceTask;
-import com.bmw.maintenance.domain.TaskStatus;
-import com.bmw.maintenance.domain.TaskType;
+import com.bmw.maintenance.domain.*;
+import jakarta.enterprise.context.ApplicationScoped;
+import jakarta.enterprise.inject.Instance;
+import jakarta.enterprise.inject.literal.NamedLiteral;
 
 import java.util.List;
-
-import jakarta.enterprise.context.ApplicationScoped;
+import java.util.Map;
 
 /**
  * Service for creating and managing maintenance tasks.
@@ -15,29 +15,27 @@ import jakarta.enterprise.context.ApplicationScoped;
 public class MaintenanceTaskService {
 
     private final MaintenanceTasks maintenanceTasks;
-
+    private final Instance<MaintenanceTaskFactory> factory;
     /**
      * Creates a new service instance.
      *
      * @param maintenanceTasks backing repository
      */
-    public MaintenanceTaskService(MaintenanceTasks maintenanceTasks) {
+    public MaintenanceTaskService(MaintenanceTasks maintenanceTasks, Instance<MaintenanceTaskFactory> factory) {
         this.maintenanceTasks = maintenanceTasks;
+        this.factory = factory;
     }
 
     /**
      * Creates a maintenance task for a vehicle.
      *
-     * @param vin   vehicle identification number
-     * @param type  task type
-     * @param notes optional notes
+     * @param vin           vehicle identification number
+     * @param type          task type
+     * @param notes         optional notes
      * @return created task id
      */
-    public Long createTask(String vin, TaskType type, String notes) {
-        MaintenanceTask task = switch (type) {
-            case OIL_CHANGE -> MaintenanceTask.createOilChange(vin, notes);
-            case BRAKE_INSPECTION -> MaintenanceTask.createBrakeInspection(vin, notes);
-        };
+    public Long createTask(String vin, TaskType type, String notes, Map<String, Object> additionalData) {
+        MaintenanceTask task = factory.select(NamedLiteral.of(type.toString())).get().create(vin, type, notes, additionalData);
 
         MaintenanceTask created = maintenanceTasks.create(task);
         return created.getTaskId();
@@ -83,6 +81,6 @@ public class MaintenanceTaskService {
         if (vin != null && !vin.isBlank()) {
             return maintenanceTasks.findByVin(vin);
         }
-        return maintenanceTasks.findAll();
+        return maintenanceTasks.findAllTasks();
     }
 }

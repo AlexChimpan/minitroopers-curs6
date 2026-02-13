@@ -40,6 +40,23 @@ paths:
                   vin: "WBA3B5C50DF123456"
                   type: "BRAKE_INSPECTION"
                   notes: "Annual brake inspection"
+              tireService:
+                summary: Tire Service Task
+                value:
+                  vin: "WBA3B5C50DF123456"
+                  type: "TIRE_SERVICE"
+                  additionalData:
+                    tirePosition: "FRONT_LEFT"
+                  notes: "Rotate tire and check alignment"
+              diagnosticScan:
+                summary: Diagnostic Scan Task
+                value:
+                  vin: "WBA3B5C50DF123456"
+                  type: "DIAGNOSTIC_SCAN"
+                  additionalData:
+                    errorCodes: [ "P0300", "P0420" ]
+                    scannerType: "BASIC"
+                  notes: "Customer reports rough idle"
       responses:
         '201':
           description: Task created successfully
@@ -130,14 +147,18 @@ paths:
             schema:
               $ref: '#/components/schemas/UpdateStatusRequest'
             examples:
+              inProgress:
+                summary: Mark as in progress
+                value:
+                  status: "IN_PROGRESS"
               completed:
                 summary: Mark as completed
                 value:
                   status: "COMPLETED"
-              cancelled:
-                summary: Cancel task
+              created:
+                summary: Mark as created (default)
                 value:
-                  status: "CANCELLED"
+                  status: "CREATED"
       responses:
         '204':
           description: Status updated successfully
@@ -194,7 +215,22 @@ paths:
 
 components:
   schemas:
+
+    # ---------- Requests ----------
     CreateTaskRequest:
+      oneOf:
+        - $ref: '#/components/schemas/CreateBaseTaskRequest'
+        - $ref: '#/components/schemas/CreateTireServiceTaskRequest'
+        - $ref: '#/components/schemas/CreateDiagnosticScanTaskRequest'
+      discriminator:
+        propertyName: type
+        mapping:
+          OIL_CHANGE: '#/components/schemas/CreateBaseTaskRequest'
+          BRAKE_INSPECTION: '#/components/schemas/CreateBaseTaskRequest'
+          TIRE_SERVICE: '#/components/schemas/CreateTireServiceTaskRequest'
+          DIAGNOSTIC_SCAN: '#/components/schemas/CreateDiagnosticScanTaskRequest'
+
+    CreateBaseTaskRequest:
       type: object
       required:
         - vin
@@ -208,10 +244,54 @@ components:
           example: "WBA3B5C50DF123456"
         type:
           $ref: '#/components/schemas/TaskType'
+          description: Type of maintenance task
+          example: "OIL_CHANGE"
         notes:
           type: string
           description: Additional notes for the task
           example: "Customer reported squeaking noise"
+      description: Request payload for maintenance tasks that do not require extra type-specific fields.
+
+    CreateTireServiceTaskRequest:
+      allOf:
+        - $ref: '#/components/schemas/CreateBaseTaskRequest'
+        - type: object
+          required:
+            - tirePosition
+          properties:
+            type:
+              type: string
+              enum: [TIRE_SERVICE]
+              description: Must be TIRE_SERVICE for tire service tasks.
+              example: "TIRE_SERVICE"
+            tirePosition:
+              $ref: '#/components/schemas/TirePosition'
+      description: >
+        Request payload for a Tire Service task. Includes tire rotation, tire replacement, and wheel alignment.
+
+    CreateDiagnosticScanTaskRequest:
+      allOf:
+        - $ref: '#/components/schemas/CreateBaseTaskRequest'
+        - type: object
+          required:
+            - errorCodes
+            - scannerType
+          properties:
+            type:
+              type: string
+              enum: [DIAGNOSTIC_SCAN]
+              description: Must be DIAGNOSTIC_SCAN for diagnostic scan tasks.
+              example: "DIAGNOSTIC_SCAN"
+            errorCodes:
+              type: array
+              description: List of diagnostic trouble codes read from the vehicle (OBD-II).
+              items:
+                type: string
+              example: ["P0300", "P0420"]
+            scannerType:
+              $ref: '#/components/schemas/ScannerType'
+      description: >
+        Request payload for a Diagnostic Scan task. Includes OBD-II diagnostics and error code reading.
 
     UpdateStatusRequest:
       type: object
@@ -232,6 +312,8 @@ components:
           description: Task notes
           example: "Service completed successfully"
 
+
+    # ---------- Responses / Domain ----------
     MaintenanceTask:
       type: object
       properties:
@@ -250,12 +332,46 @@ components:
           type: string
           example: "Regular maintenance"
 
+        # Optional: include these fields if your API returns them on the task
+        tirePosition:
+          $ref: '#/components/schemas/TirePosition'
+        errorCodes:
+          type: array
+          items:
+            type: string
+          example: ["P0300", "P0420"]
+        scannerType:
+          $ref: '#/components/schemas/ScannerType'
+
+      description: >
+        Maintenance task representation. Some fields are only relevant for specific task types
+        (e.g. tirePosition for TIRE_SERVICE; errorCodes/scannerType for DIAGNOSTIC_SCAN).
+
     TaskType:
       type: string
       enum:
         - OIL_CHANGE
         - BRAKE_INSPECTION
+        - TIRE_SERVICE
+        - DIAGNOSTIC_SCAN
       description: Type of maintenance task
+
+    TirePosition:
+      type: string
+      enum:
+        - FRONT_LEFT
+        - FRONT_RIGHT
+        - REAR_LEFT
+        - REAR_RIGHT
+        - ALL
+      description: Target tire position for the tire service (rotation/replacement/alignment).
+
+    ScannerType:
+      type: string
+      enum:
+        - BASIC
+        - ADVANCED
+      description: Type of diagnostic scanner used.
 
     TaskStatus:
       type: string
