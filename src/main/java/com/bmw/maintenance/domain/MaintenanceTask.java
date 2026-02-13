@@ -18,30 +18,27 @@ import java.util.List;
  * @see ScannerType for diagnostic scan tasks
  * @see TaskStatus for possible task statuses
  */
-@Entity
 @Builder
 @Getter
-@Setter
 @NoArgsConstructor
-@AllArgsConstructor(access = AccessLevel.PRIVATE)
+@AllArgsConstructor
 public class MaintenanceTask {
 
-    @Id @GeneratedValue private Long taskId;
+    private Long taskId;
 
     private String vin;
 
-    @Enumerated(EnumType.STRING) private TaskType type;
+    private TaskType type;
 
-    @Enumerated(EnumType.STRING) private TaskStatus status;
+    private TaskStatus status;
 
     private String notes;
 
-    @Enumerated(EnumType.STRING) private TirePosition tirePosition;
+    private TirePosition tirePosition;
 
-    @ElementCollection(fetch = FetchType.EAGER)
     private List<String> errorCodes;
 
-    @Enumerated(EnumType.STRING) private ScannerType scannerType;
+    private ScannerType scannerType;
 
 
     /**
@@ -147,13 +144,16 @@ public class MaintenanceTask {
      * @param notes  optional notes for the task
      * @return a \`MaintenanceTask\` populated from stored values
      */
-    public static MaintenanceTask reconstitute(Long taskId, String vin, TaskType type, TaskStatus status, String notes) {
+    public static MaintenanceTask reconstitute(Long taskId, String vin, TaskType type, TaskStatus status, String notes, TirePosition tirePosition, List<String> errorCodes, ScannerType scannerType) {
         return MaintenanceTask.builder()
                 .taskId(taskId)
                 .vin(vin)
                 .type(type)
                 .status(status)
                 .notes(notes)
+                .tirePosition(tirePosition)
+                .errorCodes(errorCodes)
+                .scannerType(scannerType)
                 .build();
     }
 

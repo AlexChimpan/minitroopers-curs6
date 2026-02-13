@@ -10,65 +10,75 @@ import jakarta.inject.Inject;
 import jakarta.transaction.Transactional;
 import jakarta.ws.rs.NotFoundException;
 
+import java.time.LocalDateTime;
 import java.util.List;
 
 @ApplicationScoped
 @Transactional
-public class MaintenanceTaskPanacheRepository implements MaintenanceTasks, PanacheRepository<MaintenanceTask> {
+public class MaintenanceTaskPanacheRepository implements MaintenanceTasks, PanacheRepository<MaintenanceTaskEntity> {
+
+    private static final MaintenanceTaskMapper mapper = new MaintenanceTaskMapperImpl();
 
     @Override
     public MaintenanceTask create(MaintenanceTask task) {
-        persist(task);
-        return task;
+        MaintenanceTaskEntity entity = mapper.toEntity(task);
+        persist(entity);
+        return mapper.toDomain(entity);
     }
 
     @Override
     public MaintenanceTask updateStatus(String taskId, TaskStatus newStatus) {
         Long id = Long.parseLong(taskId);
-        MaintenanceTask task = findById(id);
+        MaintenanceTaskEntity entity = findById(id);
 
-        if (task == null) {
+        if (entity == null) {
             throw new NotFoundException("Task not found: " + taskId);
         }
 
-        task.setStatus(newStatus);
+        entity.setStatus(newStatus);
+        entity.setUpdatedAt(LocalDateTime.now());
 
-        return getEntityManager().merge(task);
+        return mapper.toDomain(entity);
     }
 
     @Override
     public MaintenanceTask upsertNotes(String taskId, String notes){
         Long id = Long.parseLong(taskId);
-        MaintenanceTask task = findById(id);
+        MaintenanceTaskEntity entity = findById(id);
 
-        if (task == null) {
+        if (entity == null) {
             throw new NotFoundException("Task not found: " + taskId);
         }
 
-        task.setNotes(notes);
+        entity.setNotes(notes);
+        entity.setUpdatedAt(LocalDateTime.now());
 
-        return getEntityManager().merge(task);
+        return mapper.toDomain(entity);
     }
 
     @Override
     public MaintenanceTask findById(String taskId){
         Long id = Long.parseLong(taskId);
-        MaintenanceTask task = findById(id);
+        MaintenanceTaskEntity entity = findById(id);
 
-        if (task == null) {
+        if (entity == null) {
             throw new NotFoundException("Task not found: " + taskId);
         }
 
-        return task;
+        return mapper.toDomain(entity);
     }
 
     @Override
     public List<MaintenanceTask> findAllTasks(){
-        return listAll();
+        return listAll().stream()
+                .map(mapper::toDomain)
+                .toList();
     }
 
     @Override
     public List<MaintenanceTask> findByVin(String vin){
-        return list("vin", vin);
+        return list("vin", vin).stream()
+                .map(mapper::toDomain)
+                .toList();
     }
 }
