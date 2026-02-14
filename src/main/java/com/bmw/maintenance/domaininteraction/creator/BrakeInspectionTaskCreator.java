@@ -6,6 +6,11 @@ import jakarta.enterprise.context.ApplicationScoped;
 
 import java.util.Map;
 
+
+/**
+ * TaskCreator implementation responsible for creating brake inspection tasks.
+ * Supports {@link TaskType#BRAKE_INSPECTION}.
+ */
 @ApplicationScoped
 public class BrakeInspectionTaskCreator implements TaskCreator{
 
@@ -16,6 +21,6 @@ public class BrakeInspectionTaskCreator implements TaskCreator{
 
     @Override
     public MaintenanceTask create(String vin, String notes, Map<String, Object> additionalData) {
-        return MaintenanceTask.createOilChange(vin, notes);
+        return MaintenanceTask.createBrakeInspection(vin, notes);
     }
 }

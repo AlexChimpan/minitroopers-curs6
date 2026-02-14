@@ -7,6 +7,10 @@ import jakarta.enterprise.context.ApplicationScoped;
 
 import java.util.Map;
 
+/**
+ * TaskCreator implementation responsible for creating tire service tasks.
+ * Supports {@link TaskType#TIRE_SERVICE}.
+ */
 @ApplicationScoped
 public class TireServiceTaskCreator implements TaskCreator{
     @Override

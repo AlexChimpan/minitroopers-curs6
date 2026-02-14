@@ -6,6 +6,10 @@ import jakarta.enterprise.context.ApplicationScoped;
 
 import java.util.Map;
 
+/**
+ * TaskCreator implementation responsible for creating oil change tasks.
+ * Supports {@link TaskType#OIL_CHANGE}.
+ */
 @ApplicationScoped
 public class OilChangeTaskCreator implements TaskCreator{
     @Override

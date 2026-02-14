@@ -9,6 +9,10 @@ import jakarta.enterprise.context.ApplicationScoped;
 import java.util.List;
 import java.util.Map;
 
+/**
+ * TaskCreator implementation responsible for creating diagnostic scan tasks.
+ * Supports {@link TaskType#DIAGNOSTIC_SCAN}.
+ */
 @ApplicationScoped
 public class DiagnosticScanCreator implements TaskCreator{
     @Override

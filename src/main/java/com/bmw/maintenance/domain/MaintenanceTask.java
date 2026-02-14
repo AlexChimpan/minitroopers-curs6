@@ -77,6 +77,15 @@ public class MaintenanceTask {
         return task;
     }
 
+    /**
+     * Creates a new tire service task in the IN_PROGRESS status.
+     *
+     * @param vin           vehicle identification number
+     * @param notes         optional notes for the task
+     * @param tirePosition  tire position involved in the service
+     * @return a new \`MaintenanceTask\` configured for tire service
+     * @throws IllegalStateException if required business rules are not met
+     */
     public static MaintenanceTask createTireService(String vin, String notes, TirePosition tirePosition) {
         MaintenanceTask task = MaintenanceTask.builder()
                 .vin(vin)
@@ -89,6 +98,16 @@ public class MaintenanceTask {
         return task;
     }
 
+    /**
+     * Creates a new diagnostic scan task in the IN_PROGRESS status.
+     *
+     * @param vin          vehicle identification number
+     * @param notes        optional notes for the task
+     * @param errorCodes   list of diagnostic error codes (may be empty)
+     * @param scannerType  scanner type used for the diagnostic scan
+     * @return a new \`MaintenanceTask\` configured for diagnostic scan
+     * @throws IllegalStateException if required business rules are not met
+     */
     public static MaintenanceTask createDiagnosticScan(String vin, String notes, List<String> errorCodes, ScannerType scannerType) {
         MaintenanceTask task = MaintenanceTask.builder()
                 .vin(vin)
