@@ -30,6 +30,7 @@ public class MaintenanceTaskService {
      * Creates a new service instance.
      *
      * @param maintenanceTasks backing repository
+     * @param maintenanceTaskCreator CDI provider for all {@link TaskCreator}
      */
     public MaintenanceTaskService(MaintenanceTasks maintenanceTasks, Instance<TaskCreator> maintenanceTaskCreator) {
         this.maintenanceTasks = maintenanceTasks;
@@ -42,7 +43,9 @@ public class MaintenanceTaskService {
      * @param vin   vehicle identification number
      * @param type  task type
      * @param notes optional notes
+     * @param additionalData extra fields required by certain task types
      * @return created task id
+     * @throws IllegalArgumentException if no creator is registered for the specified
      */
     public Long createTask(String vin, TaskType type, String notes, Map<String, Object> additionalData) {
         TaskCreator creator = maintenanceTaskCreator
