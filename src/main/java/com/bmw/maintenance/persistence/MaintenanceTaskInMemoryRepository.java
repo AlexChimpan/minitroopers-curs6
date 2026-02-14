@@ -6,35 +6,30 @@ import com.bmw.maintenance.domaininteraction.MaintenanceTasks;
 
 import java.time.LocalDateTime;
 import java.util.*;
-import java.util.concurrent.ConcurrentHashMap;
-import java.util.concurrent.atomic.AtomicLong;
 import java.util.stream.Collectors;
 
+import com.bmw.maintenance.persistence.mapper.MaintenanceTaskMapper;
 import jakarta.enterprise.context.ApplicationScoped;
 import jakarta.inject.Inject;
 import jakarta.ws.rs.NotFoundException;
 
-/**
- * In-memory implementation of {@link MaintenanceTasks} for managing maintenance tasks.
- */
 @ApplicationScoped
 public class MaintenanceTaskInMemoryRepository implements MaintenanceTasks {
 
-    private final Map<Long, MaintenanceTaskEntity> storage = new ConcurrentHashMap<>();
-    private final AtomicLong idCounter = new AtomicLong(1L);
     private final MaintenanceTaskMapper mapper;
+    private final MaintenanceTaskRepository repository;
+
 
     @Inject
-    public MaintenanceTaskInMemoryRepository(MaintenanceTaskMapper mapper) {
+    public MaintenanceTaskInMemoryRepository(MaintenanceTaskMapper mapper, MaintenanceTaskRepository repository) {
         this.mapper = mapper;
+        this.repository = repository;
     }
 
     @Override
     public MaintenanceTask create(MaintenanceTask task) {
         MaintenanceTaskEntity entity = mapper.toEntity(task);
-        entity.setId(idCounter.getAndIncrement());
-
-        storage.put(entity.getId(), entity);
+        repository.persist(entity);
 
         return mapper.toDomain(entity);
     }
@@ -42,7 +37,7 @@ public class MaintenanceTaskInMemoryRepository implements MaintenanceTasks {
     @Override
     public MaintenanceTask findById(String taskId) {
         Long id = Long.parseLong(taskId);
-        MaintenanceTaskEntity entity = storage.get(id);
+        MaintenanceTaskEntity entity = repository.findById(id);
 
         if (entity == null) {
             throw new NotFoundException("Task not found: " + taskId);
@@ -54,7 +49,7 @@ public class MaintenanceTaskInMemoryRepository implements MaintenanceTasks {
     @Override
     public MaintenanceTask updateStatus(String taskId, TaskStatus newStatus) {
         Long id = Long.parseLong(taskId);
-        MaintenanceTaskEntity entity = storage.get(id);
+        MaintenanceTaskEntity entity = repository.findById(id);
 
         if (entity == null) {
             throw new NotFoundException("Task not found: " + taskId);
@@ -63,14 +58,14 @@ public class MaintenanceTaskInMemoryRepository implements MaintenanceTasks {
         entity.setStatus(newStatus);
         entity.setUpdatedAt(LocalDateTime.now());
 
-        storage.put(id, entity);
+        repository.persist(entity);
         return mapper.toDomain(entity);
     }
 
     @Override
     public MaintenanceTask upsertNotes(String taskId, String notes) {
         Long id = Long.parseLong(taskId);
-        MaintenanceTaskEntity entity = storage.get(id);
+        MaintenanceTaskEntity entity = repository.findById(id);
 
         if (entity == null) {
             throw new NotFoundException("Task not found: " + taskId);
@@ -79,21 +74,21 @@ public class MaintenanceTaskInMemoryRepository implements MaintenanceTasks {
         entity.setNotes(notes);
         entity.setUpdatedAt(LocalDateTime.now());
 
-        storage.put(id, entity);
+        repository.persist(entity);
 
         return mapper.toDomain(entity);
     }
 
     @Override
-    public List<MaintenanceTask> findAll() {
-        return storage.values().stream()
+    public List<MaintenanceTask> findAllTasks() {
+        return repository.findAll().stream()
                 .map(mapper::toDomain)
                 .collect(Collectors.toList());
     }
 
     @Override
     public List<MaintenanceTask> findByVin(String vin) {
-        return storage.values().stream()
+        return repository.find("vin", vin).stream()
                 .filter(entity -> vin.equals(entity.getVin()))
                 .map(mapper::toDomain)
                 .collect(Collectors.toList());

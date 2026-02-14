@@ -1,7 +1,8 @@
-package com.bmw.maintenance.persistence;
+package com.bmw.maintenance.persistence.mapper;
 
 import java.time.LocalDateTime;
 
+import com.bmw.maintenance.persistence.MaintenanceTaskEntity;
 import jakarta.enterprise.context.ApplicationScoped;
 
 import com.bmw.maintenance.domain.MaintenanceTask;
@@ -19,7 +20,11 @@ public class MaintenanceTaskMapperImpl implements MaintenanceTaskMapper {
                 entity.getVin(),
                 entity.getType(),
                 entity.getStatus(),
-                entity.getNotes()
+                entity.getNotes(),
+                entity.getTirePosition(),
+                entity.getScannerType(),
+                entity.getErrorCodes()
+
         );
     }
 
@@ -32,7 +37,10 @@ public class MaintenanceTaskMapperImpl implements MaintenanceTaskMapper {
                 task.getStatus(),
                 task.getNotes(),
                 LocalDateTime.now(),
-                LocalDateTime.now()
+                LocalDateTime.now(),
+                task.getTirePosition(),
+                task.getScannerType(),
+                task.getErrorCodes()
         );
     }
 }

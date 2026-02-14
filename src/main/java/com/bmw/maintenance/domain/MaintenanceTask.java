@@ -1,9 +1,16 @@
 package com.bmw.maintenance.domain;
 
+import com.bmw.maintenance.domain.details.ScannerType;
+import com.bmw.maintenance.domain.details.TirePosition;
+import jakarta.persistence.Embeddable;
 import lombok.AccessLevel;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
+import org.h2.api.ErrorCode;
+
+import java.util.List;
+import java.util.Scanner;
 
 /**
  * Domain entity representing a maintenance task for a vehicle.
@@ -27,6 +34,10 @@ public class MaintenanceTask {
     private TaskStatus status;
     private String notes;
 
+    private List<String> errorCodes;
+
+    private ScannerType scannerType;
+    private TirePosition tirePosition;
 
     /**
      * Creates a new oil change task in the \`IN\_PROGRESS\` status.
@@ -67,6 +78,50 @@ public class MaintenanceTask {
     }
 
     /**
+     * Creates a new tire service task in the IN_PROGRESS status.
+     *
+     * @param vin           vehicle identification number
+     * @param notes         optional notes for the task
+     * @param tirePosition  tire position involved in the service
+     * @return a new \`MaintenanceTask\` configured for tire service
+     * @throws IllegalStateException if required business rules are not met
+     */
+    public static MaintenanceTask createTireService(String vin, String notes, TirePosition tirePosition) {
+        MaintenanceTask task = MaintenanceTask.builder()
+                .vin(vin)
+                .type(TaskType.TIRE_SERVICE)
+                .status(TaskStatus.IN_PROGRESS)
+                .notes(notes)
+                .tirePosition(tirePosition)
+                .build();
+        task.validateBusinessRules();
+        return task;
+    }
+
+    /**
+     * Creates a new diagnostic scan task in the IN_PROGRESS status.
+     *
+     * @param vin          vehicle identification number
+     * @param notes        optional notes for the task
+     * @param errorCodes   list of diagnostic error codes (may be empty)
+     * @param scannerType  scanner type used for the diagnostic scan
+     * @return a new \`MaintenanceTask\` configured for diagnostic scan
+     * @throws IllegalStateException if required business rules are not met
+     */
+    public static MaintenanceTask createDiagnosticScan(String vin, String notes, List<String> errorCodes, ScannerType scannerType) {
+        MaintenanceTask task = MaintenanceTask.builder()
+                .vin(vin)
+                .type(TaskType.DIAGNOSTIC_SCAN)
+                .status(TaskStatus.IN_PROGRESS)
+                .notes(notes)
+                .errorCodes(errorCodes)
+                .scannerType(scannerType)
+                .build();
+        task.validateBusinessRules();
+        return task;
+    }
+
+    /**
      * Reconstitutes a task from persisted state without applying business rules.
      *
      * @param taskId persisted task identifier
@@ -76,13 +131,17 @@ public class MaintenanceTask {
      * @param notes  optional notes for the task
      * @return a \`MaintenanceTask\` populated from stored values
      */
-    public static MaintenanceTask reconstitute(Long taskId, String vin, TaskType type, TaskStatus status, String notes) {
+    public static MaintenanceTask reconstitute(Long taskId, String vin, TaskType type, TaskStatus status,
+                                               String notes, TirePosition tirePosition, ScannerType scannerType, List<String> errorCodes) {
         return MaintenanceTask.builder()
                 .taskId(taskId)
                 .vin(vin)
                 .type(type)
                 .status(status)
                 .notes(notes)
+                .tirePosition(tirePosition)
+                .scannerType(scannerType)
+                .errorCodes(errorCodes)
                 .build();
     }
 

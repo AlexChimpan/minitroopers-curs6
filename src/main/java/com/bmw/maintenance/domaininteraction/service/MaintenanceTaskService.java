@@ -1,12 +1,19 @@
-package com.bmw.maintenance.domaininteraction;
+package com.bmw.maintenance.domaininteraction.service;
 
 import com.bmw.maintenance.domain.MaintenanceTask;
 import com.bmw.maintenance.domain.TaskStatus;
 import com.bmw.maintenance.domain.TaskType;
 
 import java.util.List;
+import java.util.Map;
 
+
+import com.bmw.maintenance.domaininteraction.MaintenanceTasks;
+import com.bmw.maintenance.domaininteraction.creator.TaskCreator;
 import jakarta.enterprise.context.ApplicationScoped;
+import jakarta.enterprise.inject.Instance;
+import jakarta.inject.Inject;
+
 
 /**
  * Service for creating and managing maintenance tasks.
@@ -16,13 +23,18 @@ public class MaintenanceTaskService {
 
     private final MaintenanceTasks maintenanceTasks;
 
+    @Inject
+    private final Instance<TaskCreator> maintenanceTaskCreator;
+
     /**
      * Creates a new service instance.
      *
      * @param maintenanceTasks backing repository
+     * @param maintenanceTaskCreator CDI provider for all {@link TaskCreator}
      */
-    public MaintenanceTaskService(MaintenanceTasks maintenanceTasks) {
+    public MaintenanceTaskService(MaintenanceTasks maintenanceTasks, Instance<TaskCreator> maintenanceTaskCreator) {
         this.maintenanceTasks = maintenanceTasks;
+        this.maintenanceTaskCreator = maintenanceTaskCreator;
     }
 
     /**
@@ -31,16 +43,21 @@ public class MaintenanceTaskService {
      * @param vin   vehicle identification number
      * @param type  task type
      * @param notes optional notes
+     * @param additionalData extra fields required by certain task types
      * @return created task id
+     * @throws IllegalArgumentException if no creator is registered for the specified
      */
-    public Long createTask(String vin, TaskType type, String notes) {
-        MaintenanceTask task = switch (type) {
-            case OIL_CHANGE -> MaintenanceTask.createOilChange(vin, notes);
-            case BRAKE_INSPECTION -> MaintenanceTask.createBrakeInspection(vin, notes);
-        };
+    public Long createTask(String vin, TaskType type, String notes, Map<String, Object> additionalData) {
+        TaskCreator creator = maintenanceTaskCreator
+                .stream()
+                .filter(c -> c.supports() == type)
+                .findFirst()
+                .orElseThrow(() -> new IllegalArgumentException("No creator found for the specified task"));
 
-        MaintenanceTask created = maintenanceTasks.create(task);
-        return created.getTaskId();
+        MaintenanceTask task = creator.create(vin, notes, additionalData);
+        MaintenanceTask newMaintenanceTasks = maintenanceTasks.create(task);
+
+        return newMaintenanceTasks.getTaskId();
     }
 
     /**
@@ -83,6 +100,6 @@ public class MaintenanceTaskService {
         if (vin != null && !vin.isBlank()) {
             return maintenanceTasks.findByVin(vin);
         }
-        return maintenanceTasks.findAll();
+        return maintenanceTasks.findAllTasks();
     }
 }
