@@ -1,12 +1,13 @@
 package com.bmw.maintenance.domaininteraction;
 
-import com.bmw.maintenance.domain.MaintenanceTask;
-import com.bmw.maintenance.domain.TaskStatus;
-import com.bmw.maintenance.domain.TaskType;
+import com.bmw.maintenance.domain.*;
 
 import java.util.List;
+import java.util.Map;
 
 import jakarta.enterprise.context.ApplicationScoped;
+import jakarta.enterprise.inject.Instance;
+import jakarta.enterprise.inject.literal.NamedLiteral;
 
 /**
  * Service for creating and managing maintenance tasks.
@@ -15,14 +16,16 @@ import jakarta.enterprise.context.ApplicationScoped;
 public class MaintenanceTaskService {
 
     private final MaintenanceTasks maintenanceTasks;
+    private final Instance<MaintenanceTaskType> maintenanceTaskTypes;
 
     /**
      * Creates a new service instance.
      *
      * @param maintenanceTasks backing repository
      */
-    public MaintenanceTaskService(MaintenanceTasks maintenanceTasks) {
+    public MaintenanceTaskService(MaintenanceTasks maintenanceTasks, Instance<MaintenanceTaskType> maintenanceTaskTypes) {
         this.maintenanceTasks = maintenanceTasks;
+        this.maintenanceTaskTypes = maintenanceTaskTypes;
     }
 
     /**
@@ -31,17 +34,18 @@ public class MaintenanceTaskService {
      * @param vin   vehicle identification number
      * @param type  task type
      * @param notes optional notes
+     * @param additionalData optional additional data specific to the task type
      * @return created task id
      */
-    public Long createTask(String vin, TaskType type, String notes) {
-        MaintenanceTask task = switch (type) {
-            case OIL_CHANGE -> MaintenanceTask.createOilChange(vin, notes);
-            case BRAKE_INSPECTION -> MaintenanceTask.createBrakeInspection(vin, notes);
-        };
+    public Long createTask(String vin, TaskType type, String notes, Map<String, Object> additionalData) {
+        Instance<MaintenanceTaskType> selector = maintenanceTaskTypes.select(NamedLiteral.of(String.valueOf(type)));
+        MaintenanceTaskType maintenanceTaskType = selector.get();
+        MaintenanceTask task = maintenanceTaskType.create(vin, type, notes, additionalData);
 
-        MaintenanceTask created = maintenanceTasks.create(task);
-        return created.getTaskId();
+        maintenanceTasks.create(task);
+        return task.getTaskId();
     }
+
 
     /**
      * Updates the status of a task.
@@ -83,6 +87,6 @@ public class MaintenanceTaskService {
         if (vin != null && !vin.isBlank()) {
             return maintenanceTasks.findByVin(vin);
         }
-        return maintenanceTasks.findAll();
+        return maintenanceTasks.findAllTasks();
     }
 }
