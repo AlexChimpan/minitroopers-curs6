@@ -118,7 +118,7 @@ public class MaintenanceTaskRepository implements PanacheRepository<MaintenanceT
 
     @Override
     public List<MaintenanceTask> findByVin(String vin) {
-        List<MaintenanceTaskEntity> entities = list("vin", vin);
+        List<MaintenanceTaskEntity> entities = listAll();
         return entities.stream()
                 .map(entity -> {
                     MaintenanceTaskSchemaVLatest.MaintenanceTask schema =
