@@ -1,17 +1,16 @@
 package com.bmw.maintenance.domaininteraction;
 
-import com.bmw.maintenance.domain.DiagnosticScan.ErrorCodes;
-import com.bmw.maintenance.domain.DiagnosticScan.ScannerType;
 import com.bmw.maintenance.domain.MaintenanceTask;
 import com.bmw.maintenance.domain.TaskStatus;
 import com.bmw.maintenance.domain.TaskType;
-
+import java.util.EnumMap;
 import java.util.List;
-import java.util.Set;
-
-import com.bmw.maintenance.domain.TireTask.TirePosition;
-import com.bmw.maintenance.domain.TireTask.TireServiceType;
+import java.util.Map;
+import com.bmw.maintenance.domaininteraction.Tasks.TaskCreator;
+import jakarta.annotation.PostConstruct;
 import jakarta.enterprise.context.ApplicationScoped;
+import jakarta.enterprise.inject.Instance;
+import jakarta.inject.Inject;
 
 /**
  * Service for creating and managing maintenance tasks.
@@ -20,6 +19,24 @@ import jakarta.enterprise.context.ApplicationScoped;
 public class MaintenanceTaskService {
 
     private final MaintenanceTasks maintenanceTasks;
+    private Map<TaskType, TaskCreator> byType;
+
+    @Inject
+    private Instance<TaskCreator> creators;
+
+
+    @PostConstruct
+    void init() {
+        byType = new EnumMap<>(TaskType.class);
+        for (TaskCreator c : creators) {
+            TaskType type = c.supports();
+            TaskCreator prev = byType.putIfAbsent(type, c);
+            if (prev != null) {
+                throw new IllegalStateException("Duplicat TaskCreator pentru " + type);
+            }
+        }
+    }
+
 
     /**
      * Creates a new service instance.
@@ -38,14 +55,13 @@ public class MaintenanceTaskService {
      * @param notes optional notes
      * @return created task id
      */
-    public Long createTask(String vin, TaskType type, String notes, TirePosition tirePosition, TireServiceType tireServiceType, ScannerType scannerType, Set<ErrorCodes> errorCodes) {
-        MaintenanceTask task = switch (type) {
-            case OIL_CHANGE -> MaintenanceTask.createOilChange(vin, notes);
-            case BRAKE_INSPECTION -> MaintenanceTask.createBrakeInspection(vin, notes);
-            case TIRE_SERVICE -> MaintenanceTask.createTireService(vin, notes, tireServiceType, tirePosition);
-            case DIAGNOSTIC_SCAN -> MaintenanceTask.createDiagnosticScanService(vin,notes,scannerType,errorCodes);
-        };
+    public Long createTask(String vin, TaskType type, String notes, Map<String, Object> additionalData) {
+        TaskCreator taskCreator = byType.get(type);
+        if (taskCreator == null) {
+            throw new IllegalArgumentException("Doesn't exist task creator for type " + type);
+        }
 
+        MaintenanceTask task = taskCreator.create(vin, notes, additionalData);
         MaintenanceTask created = maintenanceTasks.create(task);
         return created.getTaskId();
     }

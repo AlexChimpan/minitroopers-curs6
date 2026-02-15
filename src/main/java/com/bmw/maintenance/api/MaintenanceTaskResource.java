@@ -22,6 +22,8 @@ import jakarta.ws.rs.core.Response;
 
 import lombok.NoArgsConstructor;
 
+import java.util.HashMap;
+import java.util.Map;
 import java.util.Set;
 
 /**
@@ -51,7 +53,13 @@ public class MaintenanceTaskResource {
     @POST
     @Path("/")
     public Response createTask(@Valid CreateTaskRequest request) {
-        Long taskId = maintenanceTaskService.createTask(request.vin(), request.type(), request.notes(),request.tirePosition, request.tireServiceType,request.scannerType,request.errorCodes);
+        Map<String, Object> additionalData = new HashMap<>();
+        additionalData.put("tirePosition",request.tirePosition);
+        additionalData.put("tireServiceType",request.tireServiceType);
+        additionalData.put("scannerType",request.scannerType);
+        additionalData.put("errorCodes",request.errorCodes);
+
+        Long taskId = maintenanceTaskService.createTask(request.vin(), request.type(), request.notes(),additionalData);
         return Response.status(Response.Status.CREATED).entity(taskId).build();
     }
 
