@@ -107,7 +107,7 @@ public class MaintenanceTask {
      * @return a new {@code MaintenanceTask} configured for diagnostic scan
      * @throws IllegalStateException if required business rules are not met
      */
-    public static MaintenanceTask createDiagnosticScan(String vin, String notes, ScannerType scannerType){
+    public static MaintenanceTask createDiagnosticScan(String vin, String notes, ScannerType scannerType, List<String> errorCodes){
         MaintenanceTask task = MaintenanceTask.builder()
                 .vin(vin)
                 .type(TaskType.DIAGNOSTIC_SCAN)
@@ -129,13 +129,16 @@ public class MaintenanceTask {
      * @param notes  optional notes for the task
      * @return a \`MaintenanceTask\` populated from stored values
      */
-    public static MaintenanceTask reconstitute(Long taskId, String vin, TaskType type, TaskStatus status, String notes) {
+    public static MaintenanceTask reconstitute(Long taskId, String vin, TaskType type, TaskStatus status, String notes, TirePosition tirePosition, ScannerType scannerType, List<String> errorCodes) {
         return MaintenanceTask.builder()
                 .taskId(taskId)
                 .vin(vin)
                 .type(type)
                 .status(status)
                 .notes(notes)
+                .tirePosition(tirePosition)
+                .scannerType(scannerType)
+                .errorCodes(errorCodes)
                 .build();
     }
 

@@ -1,14 +1,14 @@
 package com.bmw.maintenance.persistence;
 
+import com.bmw.maintenance.domain.ScannerType;
 import com.bmw.maintenance.domain.TaskStatus;
 import com.bmw.maintenance.domain.TaskType;
 
 import java.time.LocalDateTime;
+import java.util.List;
 
-import jakarta.persistence.Entity;
-import jakarta.persistence.GeneratedValue;
-import jakarta.persistence.GenerationType;
-import jakarta.persistence.Id;
+import com.bmw.maintenance.domain.TirePosition;
+import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -39,7 +39,10 @@ public class MaintenanceTaskEntity {
     private TaskType type;
     private TaskStatus status;
     private String notes;
+    private TirePosition tirePosition;
+    private ScannerType scannerType;
+    @ElementCollection(fetch = FetchType.EAGER)
+    private List<String> errorCodes;
     private LocalDateTime createdAt;
     private LocalDateTime updatedAt;
-    //TODO: Add tire position, scanner type, and error codes fields when needed
 }
