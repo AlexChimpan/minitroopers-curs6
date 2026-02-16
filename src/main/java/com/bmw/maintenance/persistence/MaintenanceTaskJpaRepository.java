@@ -42,11 +42,9 @@ public class MaintenanceTaskJpaRepository implements MaintenanceTasks
      @Transactional
      public MaintenanceTask create(MaintenanceTask task) {
 
-         // Map domain → schema
          MaintenanceTaskSchemaVLatest.MaintenanceTask schema =
                  mapper.toSchema(task);
 
-         // Create entity first (without aggregate)
          MaintenanceTaskEntity entity = new MaintenanceTaskEntity();
          entity.setCreatedAt(LocalDateTime.now());
          entity.setUpdatedAt(LocalDateTime.now());
