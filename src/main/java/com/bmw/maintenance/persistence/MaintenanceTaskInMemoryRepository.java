@@ -17,7 +17,7 @@ import jakarta.ws.rs.NotFoundException;
 /**
  * In-memory implementation of {@link MaintenanceTasks} for managing maintenance tasks.
  */
-@ApplicationScoped
+//@ApplicationScoped
 public class MaintenanceTaskInMemoryRepository implements MaintenanceTasks {
 
     private final Map<Long, MaintenanceTaskEntity> storage = new ConcurrentHashMap<>();
@@ -85,7 +85,7 @@ public class MaintenanceTaskInMemoryRepository implements MaintenanceTasks {
     }
 
     @Override
-    public List<MaintenanceTask> findAll() {
+    public List<MaintenanceTask> findAllTasks() {
         return storage.values().stream()
                 .map(mapper::toDomain)
                 .collect(Collectors.toList());
