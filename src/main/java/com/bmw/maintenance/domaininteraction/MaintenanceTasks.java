@@ -2,12 +2,14 @@ package com.bmw.maintenance.domaininteraction;
 
 import com.bmw.maintenance.domain.MaintenanceTask;
 import com.bmw.maintenance.domain.TaskStatus;
+import jakarta.enterprise.context.ApplicationScoped;
 
 import java.util.List;
 
 /**
  * Defines operations for managing maintenance tasks.
  */
+
 public interface MaintenanceTasks {
     /**
      * Creates a new maintenance task.
@@ -20,7 +22,7 @@ public interface MaintenanceTasks {
     /**
      * Updates the status of an existing task.
      *
-     * @param taskId the task id
+     * @param taskId    the task id
      * @param newStatus the new status
      * @return the updated task
      */
@@ -48,7 +50,7 @@ public interface MaintenanceTasks {
      *
      * @return the list of tasks
      */
-    List<MaintenanceTask> findAll();
+    List<MaintenanceTask> findAllTasks();
 
     /**
      * Finds tasks by VIN.

@@ -1,7 +1,9 @@
 package com.bmw.maintenance.api;
 
+import com.bmw.maintenance.domain.ScannerType;
 import com.bmw.maintenance.domain.TaskStatus;
 import com.bmw.maintenance.domain.TaskType;
+import com.bmw.maintenance.domain.TirePosition;
 import com.bmw.maintenance.domaininteraction.MaintenanceTaskService;
 
 import jakarta.enterprise.context.ApplicationScoped;
@@ -16,6 +18,8 @@ import jakarta.ws.rs.core.MediaType;
 import jakarta.ws.rs.core.Response;
 
 import lombok.NoArgsConstructor;
+
+import java.util.Map;
 
 /**
  * REST resource for managing maintenance tasks.
@@ -42,9 +46,8 @@ public class MaintenanceTaskResource {
      * @return HTTP 201 with created task identifier
      */
     @POST
-    @Path("/")
     public Response createTask(@Valid CreateTaskRequest request) {
-        Long taskId = maintenanceTaskService.createTask(request.vin(), request.type(), request.notes());
+        Long taskId = maintenanceTaskService.createTask(request.vin(), request.type(), request.notes(), request.additionalData());
 
         return Response.status(Response.Status.CREATED).entity(taskId).build();
     }
@@ -117,7 +120,11 @@ public class MaintenanceTaskResource {
             @NotNull
             TaskType type,
 
-            String notes
+            String notes,
+
+            TirePosition tirePosition,
+
+            Map<String, Object> additionalData
     ) {}
 
     /**
