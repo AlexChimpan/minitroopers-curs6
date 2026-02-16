@@ -1,11 +1,13 @@
 package com.bmw.maintenance.persistence;
 
+import com.bmw.maintenance.domain.ScannerType;
 import com.bmw.maintenance.domain.TaskStatus;
 import com.bmw.maintenance.domain.TaskType;
+import com.bmw.maintenance.domain.TirePosition;
 import jakarta.persistence.*;
 import lombok.*;
 
-import java.time.LocalDateTime;
+import java.util.List;
 
 @Entity
 @Getter
@@ -31,4 +33,14 @@ public class MaintenanceTaskJpaEntity {
 
     @Column
     public String notes;
+
+    @Enumerated(EnumType.STRING)
+    public TirePosition tirePosition;
+
+    @ElementCollection(fetch = FetchType.EAGER)
+    @Column(name = "error_code")
+    public List<String> errorCodes;
+
+    @Enumerated(EnumType.STRING)
+    public ScannerType scannerType;
 }
