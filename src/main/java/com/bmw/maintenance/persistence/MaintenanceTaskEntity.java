@@ -15,7 +15,16 @@ import lombok.NoArgsConstructor;
 import lombok.Setter;
 
 /**
- * Persistence entity for maintenance tasks.
+ * JPA entity representing a maintenance task persisted in the database.
+ *
+ * <p>This class maps to the {@code MaintenanceTaskEntity} table and represents
+ * a single maintenance task record for a vehicle. It uses Lombok annotations for
+ * automatic generation of getters, setters, constructors, and other boilerplate code.
+ * The entity is identified by an auto\-generated primary key and tracks creation
+ * and update timestamps.</p>
+ *
+ * @see TaskStatus
+ * @see TaskType
  */
 @Entity
 @Getter
@@ -32,4 +41,5 @@ public class MaintenanceTaskEntity {
     private String notes;
     private LocalDateTime createdAt;
     private LocalDateTime updatedAt;
+    //TODO: Add tire position, scanner type, and error codes fields when needed
 }

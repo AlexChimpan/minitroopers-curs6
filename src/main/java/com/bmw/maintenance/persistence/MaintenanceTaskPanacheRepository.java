@@ -11,6 +11,18 @@ import jakarta.ws.rs.NotFoundException;
 
 import java.util.List;
 
+/**
+ * Repository implementation for maintenance tasks using Quarkus Panache ORM.
+ *
+ * <p>This class serves as the persistence layer for {@link MaintenanceTask} entities,
+ * implementing the {@link MaintenanceTasks} domain port. It extends
+ * {@code PanacheRepository} to leverage Panache's simplified data access patterns.
+ * All state-modifying operations are marked as {@code @Transactional}.</p>
+ *
+ * @see MaintenanceTask
+ * @see MaintenanceTasks
+ * @see MaintenanceTaskEntity
+ */
 @ApplicationScoped
 public class MaintenanceTaskPanacheRepository implements MaintenanceTasks, PanacheRepository<MaintenanceTaskEntity> {
     private final MaintenanceTaskMapper mapper;

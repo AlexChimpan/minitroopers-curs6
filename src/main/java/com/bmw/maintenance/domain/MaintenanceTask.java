@@ -5,6 +5,8 @@ import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
 
+import java.util.List;
+
 /**
  * Domain entity representing a maintenance task for a vehicle.
  * <p>
@@ -26,6 +28,9 @@ public class MaintenanceTask {
     private TaskType type;
     private TaskStatus status;
     private String notes;
+    private TirePosition tirePosition;
+    private ScannerType scannerType;
+    private List<String> errorCodes;
 
 
     /**
@@ -61,6 +66,54 @@ public class MaintenanceTask {
                 .type(TaskType.BRAKE_INSPECTION)
                 .status(TaskStatus.IN_PROGRESS)
                 .notes(notes)
+                .build();
+        task.validateBusinessRules();
+        return task;
+    }
+
+    /**
+     * Creates a new tire service task in the {@code IN_PROGRESS} status.
+     *
+     * <p>Initializes a maintenance task for tire service, specifying the tire position.
+     * Business rules are validated before returning the instance.</p>
+     *
+     * @param vin      vehicle identification number
+     * @param notes    optional notes for the task
+     * @param position the {@link TirePosition} to be serviced; must not be {@code null}
+     * @return a new {@code MaintenanceTask} configured for tire service
+     * @throws IllegalStateException if required business rules are not met
+     */
+    public static MaintenanceTask createTireService(String vin, String notes, TirePosition position){
+        MaintenanceTask task = MaintenanceTask.builder()
+                .vin(vin)
+                .type(TaskType.TIRE_SERVICE)
+                .status(TaskStatus.IN_PROGRESS)
+                .notes(notes)
+                .tirePosition(position)
+                .build();
+        task.validateBusinessRules();
+        return task;
+    }
+
+    /**
+     * Creates a new diagnostic scan task in the {@code IN_PROGRESS} status.
+     *
+     * <p>Initializes a maintenance task for a diagnostic scan, specifying the scanner type.
+     * Business rules are validated before returning the instance.</p>
+     *
+     * @param vin         vehicle identification number
+     * @param notes       optional notes for the task
+     * @param scannerType the {@link ScannerType} to be used for the scan; must not be {@code null}
+     * @return a new {@code MaintenanceTask} configured for diagnostic scan
+     * @throws IllegalStateException if required business rules are not met
+     */
+    public static MaintenanceTask createDiagnosticScan(String vin, String notes, ScannerType scannerType){
+        MaintenanceTask task = MaintenanceTask.builder()
+                .vin(vin)
+                .type(TaskType.DIAGNOSTIC_SCAN)
+                .status(TaskStatus.IN_PROGRESS)
+                .notes(notes)
+                .scannerType(scannerType)
                 .build();
         task.validateBusinessRules();
         return task;
