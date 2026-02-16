@@ -1,10 +1,9 @@
 package com.bmw.maintenance.persistence.mapper;
 
 import com.bmw.maintenance.domain.MaintenanceTask;
-import com.bmw.maintenance.persistence.MaintenanceTaskEntity;
 
 /**
- * Maps between {@link MaintenanceTask} domain objects and {@link MaintenanceTaskEntity} persistence entities\.
+ * Maps between {@link MaintenanceTask} domain objects and {@link MaintenanceTask} persistence entities\.
  */
 public interface MaintenanceTaskMapper {
     /**
