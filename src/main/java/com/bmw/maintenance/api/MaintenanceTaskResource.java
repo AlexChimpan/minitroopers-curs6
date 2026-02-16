@@ -1,9 +1,14 @@
 package com.bmw.maintenance.api;
 
+import com.bmw.maintenance.domain.DiagnosticScan.ErrorCodes;
+import com.bmw.maintenance.domain.DiagnosticScan.ScannerType;
 import com.bmw.maintenance.domain.TaskStatus;
 import com.bmw.maintenance.domain.TaskType;
+import com.bmw.maintenance.domain.TireTask.TirePosition;
+import com.bmw.maintenance.domain.TireTask.TireServiceType;
 import com.bmw.maintenance.domaininteraction.MaintenanceTaskService;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.enterprise.context.ApplicationScoped;
 import jakarta.inject.Inject;
 import jakarta.transaction.Transactional;
@@ -16,6 +21,10 @@ import jakarta.ws.rs.core.MediaType;
 import jakarta.ws.rs.core.Response;
 
 import lombok.NoArgsConstructor;
+
+import java.util.HashMap;
+import java.util.Map;
+import java.util.Set;
 
 /**
  * REST resource for managing maintenance tasks.
@@ -44,8 +53,7 @@ public class MaintenanceTaskResource {
     @POST
     @Path("/")
     public Response createTask(@Valid CreateTaskRequest request) {
-        Long taskId = maintenanceTaskService.createTask(request.vin(), request.type(), request.notes());
-
+        Long taskId = maintenanceTaskService.createTask(request.vin(), request.type(), request.notes(),request.additionalData());
         return Response.status(Response.Status.CREATED).entity(taskId).build();
     }
 
@@ -116,6 +124,8 @@ public class MaintenanceTaskResource {
 
             @NotNull
             TaskType type,
+
+            Map<String, Object> additionalData,
 
             String notes
     ) {}
