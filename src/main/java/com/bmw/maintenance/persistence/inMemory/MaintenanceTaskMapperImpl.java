@@ -1,7 +1,8 @@
-package com.bmw.maintenance.persistence;
+package com.bmw.maintenance.persistence.inMemory;
 
 import java.time.LocalDateTime;
 
+import com.bmw.maintenance.persistence.MaintenanceTaskMapper;
 import jakarta.enterprise.context.ApplicationScoped;
 
 import com.bmw.maintenance.domain.MaintenanceTask;
@@ -9,8 +10,9 @@ import com.bmw.maintenance.domain.MaintenanceTask;
 /**
  * Maps between {@link MaintenanceTaskEntity} and {@link com.bmw.maintenance.domain.MaintenanceTask}.
  */
+
 @ApplicationScoped
-public class MaintenanceTaskMapperImpl implements MaintenanceTaskMapper {
+public class MaintenanceTaskMapperImpl implements MaintenanceTaskMapper<MaintenanceTaskEntity> {
 
     @Override
     public MaintenanceTask toDomain(MaintenanceTaskEntity entity) {
@@ -19,7 +21,10 @@ public class MaintenanceTaskMapperImpl implements MaintenanceTaskMapper {
                 entity.getVin(),
                 entity.getType(),
                 entity.getStatus(),
-                entity.getNotes()
+                entity.getNotes(),
+                entity.getTireServiceDetails(),
+                entity.getDiagnosticScanDetails()
+
         );
     }
 
@@ -31,6 +36,8 @@ public class MaintenanceTaskMapperImpl implements MaintenanceTaskMapper {
                 task.getType(),
                 task.getStatus(),
                 task.getNotes(),
+                task.getTireServiceDetails(),
+                task.getDiagnosticScanDetails(),
                 LocalDateTime.now(),
                 LocalDateTime.now()
         );
