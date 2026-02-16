@@ -3,29 +3,44 @@ package com.bmw.maintenance.persistence.mapper;
 import jakarta.enterprise.context.ApplicationScoped;
 
 import com.bmw.maintenance.domain.MaintenanceTask;
-import com.bmw.maintenance.persistence.MaintenanceTaskEntity;
 
 @ApplicationScoped
 public class MaintenanceTaskMapperImpl implements MaintenanceTaskMapper {
 
+
     @Override
-    public MaintenanceTask toDomain(MaintenanceTaskEntity entity) {
+    public MaintenanceTask toDomain(MaintenanceTaskSchemaVLatest.MaintenanceTask schema) {
+        if (schema == null) return null;
+
         return MaintenanceTask.reconstitute(
-                entity.id,
-                entity.vin,
-                entity.type,
-                entity.status,
-                entity.notes
+                schema.getTaskId(),
+                schema.getVin(),
+                schema.getType(),
+                schema.getStatus(),
+                schema.getNotes(),
+                schema.getTirePosition(),
+                schema.getErrorCodes(),
+                schema.getScannerType()
         );
     }
 
     @Override
-    public MaintenanceTaskEntity toEntity(MaintenanceTask task) {
-        MaintenanceTaskEntity entity = new MaintenanceTaskEntity();
-        entity.vin = task.getVin();
-        entity.type = task.getType();
-        entity.status = task.getStatus();
-        entity.notes = task.getNotes();
-        return entity;
+    public MaintenanceTaskSchemaVLatest.MaintenanceTask toSchema(MaintenanceTask task) {
+        if (task == null) return null;
+
+        MaintenanceTaskSchemaVLatest.MaintenanceTask schema =
+                new MaintenanceTaskSchemaVLatest.MaintenanceTask();
+
+        schema.setTaskId(task.getTaskId());
+        schema.setVin(task.getVin());
+        schema.setType(task.getType());
+        schema.setStatus(task.getStatus());
+        schema.setNotes(task.getNotes());
+        schema.setTirePosition(task.getTirePosition());
+        schema.setErrorCodes(task.getErrorCodes());
+        schema.setScannerType(task.getScannerType());
+
+        return schema;
     }
+
 }

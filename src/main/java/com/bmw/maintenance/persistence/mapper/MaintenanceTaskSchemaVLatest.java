@@ -1,11 +1,15 @@
 package com.bmw.maintenance.persistence.mapper;
 
+import com.bmw.maintenance.domain.ScannerType;
+import com.bmw.maintenance.domain.TirePosition;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
 import com.bmw.maintenance.commons.serialization.VersionedSchema;
 import com.bmw.maintenance.domain.TaskStatus;
 import com.bmw.maintenance.domain.TaskType;
+
+import java.util.List;
 
 /**
  * Contains schema definitions for maintenance task persistence.
@@ -34,6 +38,9 @@ public interface MaintenanceTaskSchemaVLatest {
         private TaskType type;
         private TaskStatus status;
         private String notes;
+        private TirePosition tirePosition;
+        private List<String> errorCodes;
+        private ScannerType scannerType;
 
         @Override
         public int schemaVersion() {
