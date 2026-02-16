@@ -1,8 +1,5 @@
 package com.bmw.maintenance.persistence;
 
-import com.bmw.maintenance.domain.TaskStatus;
-import com.bmw.maintenance.domain.TaskType;
-
 import java.time.LocalDateTime;
 
 import lombok.AllArgsConstructor;
@@ -14,6 +11,11 @@ import jakarta.persistence.Entity;
 
 /**
  * Persistence entity for maintenance tasks.
+ * <p>
+ * This entity serves as an envelope for storing maintenance task aggregates
+ * in their serialized form, along with metadata about when the entity was
+ * created and last updated.
+ * </p>
  */
 @Getter
 @Setter
@@ -23,10 +25,9 @@ import jakarta.persistence.Entity;
 public class MaintenanceTaskEntity {
 
     private Long id;
-    private String vin;
-    private TaskType type;
-    private TaskStatus status;
-    private String notes;
+
+    /** Serialized representation of the maintenance task aggregate. */
+    private String aggregate;
     private LocalDateTime createdAt;
     private LocalDateTime updatedAt;
 
