@@ -20,7 +20,7 @@ public interface MaintenanceTasks {
     /**
      * Updates the status of an existing task.
      *
-     * @param taskId the task id
+     * @param taskId    the task id
      * @param newStatus the new status
      * @return the updated task
      */
@@ -30,7 +30,7 @@ public interface MaintenanceTasks {
      * Inserts or updates the notes for a task.
      *
      * @param taskId the task id
-     * @param notes the notes to upsert
+     * @param notes  the notes to upsert
      * @return the updated task
      */
     MaintenanceTask upsertNotes(String taskId, String notes);

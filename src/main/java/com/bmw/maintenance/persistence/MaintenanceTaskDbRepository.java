@@ -24,16 +24,18 @@ public class MaintenanceTaskDbRepository implements MaintenanceTasks {
     public MaintenanceTask create(MaintenanceTask task) {
         MaintenanceTaskJpaEntity entity = new MaintenanceTaskJpaEntity();
 
-        entity.vin = task.getVin();
-        entity.type = task.getType();
-        entity.status = task.getStatus();
-        entity.notes = task.getNotes();
-        entity.tirePosition = task.getTirePosition();
-        entity.errorCodes = task.getErrorCodes();
-        entity.scannerType = task.getScannerType();
+        entity.setVin(task.getVin());
+        entity.setType(task.getType());
+        entity.setStatus(task.getStatus());
+        entity.setNotes(task.getNotes());
+        entity.setTirePosition(task.getTirePosition());
+        entity.setErrorCodes(task.getErrorCodes());
+        entity.setScannerType(task.getScannerType());
 
         repository.persist(entity);
-        return MaintenanceTask.reconstitute(entity.id, entity.vin, entity.type, entity.status, entity.notes, entity.tirePosition, entity.errorCodes, entity.scannerType);
+
+        return MaintenanceTask.reconstitute(entity.getId(), entity.getVin(), entity.getType(), entity.getStatus(), entity.getNotes(), entity.getTirePosition(), entity.getErrorCodes(), entity.getScannerType());
+
     }
 
     @Override
@@ -45,8 +47,8 @@ public class MaintenanceTaskDbRepository implements MaintenanceTasks {
             throw new NotFoundException("Task not found: " + taskId);
         }
 
-        entity.status = newStatus;
-        return MaintenanceTask.reconstitute(entity.id, entity.vin, entity.type, entity.status, entity.notes, entity.tirePosition, entity.errorCodes, entity.scannerType);
+        entity.setStatus(newStatus);
+        return MaintenanceTask.reconstitute(entity.getId(), entity.getVin(), entity.getType(), entity.getStatus(), entity.getNotes(), entity.getTirePosition(), entity.getErrorCodes(), entity.getScannerType());
     }
 
     @Override
@@ -58,9 +60,9 @@ public class MaintenanceTaskDbRepository implements MaintenanceTasks {
             throw new NotFoundException("Task not found: " + taskId);
         }
 
-        entity.notes = notes;
+        entity.setNotes(notes);
 
-        return MaintenanceTask.reconstitute(entity.id, entity.vin, entity.type, entity.status, entity.notes, entity.tirePosition, entity.errorCodes, entity.scannerType);
+        return MaintenanceTask.reconstitute(entity.getId(), entity.getVin(), entity.getType(), entity.getStatus(), entity.getNotes(), entity.getTirePosition(), entity.getErrorCodes(), entity.getScannerType());
     }
 
     @Override
@@ -72,20 +74,20 @@ public class MaintenanceTaskDbRepository implements MaintenanceTasks {
             throw new NotFoundException("Task not found: " + taskId);
         }
 
-        return MaintenanceTask.reconstitute(entity.id, entity.vin, entity.type, entity.status, entity.notes, entity.tirePosition, entity.errorCodes, entity.scannerType);
+        return MaintenanceTask.reconstitute(entity.getId(), entity.getVin(), entity.getType(), entity.getStatus(), entity.getNotes(), entity.getTirePosition(), entity.getErrorCodes(), entity.getScannerType());
     }
 
     @Override
     public List<MaintenanceTask> findAllTasks() {
         return repository.listAll().stream()
-                .map(entity -> MaintenanceTask.reconstitute(entity.id, entity.vin, entity.type, entity.status, entity.notes, entity.tirePosition, entity.errorCodes, entity.scannerType))
+                .map(entity -> MaintenanceTask.reconstitute(entity.getId(), entity.getVin(), entity.getType(), entity.getStatus(), entity.getNotes(), entity.getTirePosition(), entity.getErrorCodes(), entity.getScannerType()))
                 .collect(Collectors.toList());
     }
 
     @Override
     public List<MaintenanceTask> findByVin(String vin) {
         return repository.findByVin(vin).stream()
-                .map(entity -> MaintenanceTask.reconstitute(entity.id, entity.vin, entity.type, entity.status, entity.notes, entity.tirePosition, entity.errorCodes, entity.scannerType))
+                .map(entity -> MaintenanceTask.reconstitute(entity.getId(), entity.getVin(), entity.getType(), entity.getStatus(), entity.getNotes(), entity.getTirePosition(), entity.getErrorCodes(), entity.getScannerType()))
                 .collect(Collectors.toList());
     }
 }

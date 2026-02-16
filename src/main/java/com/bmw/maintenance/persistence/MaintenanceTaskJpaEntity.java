@@ -18,29 +18,29 @@ import java.util.List;
 public class MaintenanceTaskJpaEntity {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    public Long id;
+    private Long id;
 
     @Column(length = 17, nullable = false)
-    public String vin;
+    private String vin;
 
     @Enumerated(EnumType.STRING)
     @Column(nullable = false)
-    public TaskType type;
+    private TaskType type;
 
     @Enumerated(EnumType.STRING)
     @Column(nullable = false)
-    public TaskStatus status;
+    private TaskStatus status;
 
     @Column
-    public String notes;
+    private String notes;
 
     @Enumerated(EnumType.STRING)
-    public TirePosition tirePosition;
+    private TirePosition tirePosition;
 
     @ElementCollection(fetch = FetchType.EAGER)
     @Column(name = "error_code")
-    public List<String> errorCodes;
+    private List<String> errorCodes;
 
     @Enumerated(EnumType.STRING)
-    public ScannerType scannerType;
+    private ScannerType scannerType;
 }
