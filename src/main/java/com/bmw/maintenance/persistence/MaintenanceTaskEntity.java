@@ -1,31 +1,31 @@
 package com.bmw.maintenance.persistence;
 
-import java.time.LocalDateTime;
-
-import lombok.AllArgsConstructor;
+import io.quarkus.hibernate.orm.panache.PanacheEntityBase;
+import jakarta.persistence.*;
 import lombok.Getter;
-import lombok.NoArgsConstructor;
 import lombok.Setter;
 
-/**
- * Persistence entity for maintenance tasks.
- * <p>
- * This entity serves as an envelope for storing maintenance task aggregates
- * in their serialized form, along with metadata about when the entity was
- * created and last updated.
- * </p>
- */
+import java.time.LocalDateTime;
+
+@Entity
 @Getter
 @Setter
-@NoArgsConstructor
-@AllArgsConstructor
-public class MaintenanceTaskEntity {
+@Table(name = "maintenance_tasks")
+public class MaintenanceTaskEntity extends PanacheEntityBase {
 
+    @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    /** Serialized representation of the maintenance task aggregate. */
+    @Lob
+    @Column(nullable = false)
     private String aggregate;
+
+    @Setter
+    @Column(nullable = false)
     private LocalDateTime createdAt;
+
+    @Column(nullable = false)
     private LocalDateTime updatedAt;
 
 }
