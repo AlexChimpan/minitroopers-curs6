@@ -1,10 +1,15 @@
 package com.bmw.maintenance.persistence;
 
+import com.bmw.maintenance.domain.ScannerType;
 import com.bmw.maintenance.domain.TaskStatus;
 import com.bmw.maintenance.domain.TaskType;
 
 import java.time.LocalDateTime;
+import java.util.List;
 
+import com.bmw.maintenance.domain.TirePosition;
+import io.quarkus.hibernate.orm.panache.PanacheEntity;
+import jakarta.persistence.Entity;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -17,13 +22,17 @@ import lombok.Setter;
 @Setter
 @NoArgsConstructor
 @AllArgsConstructor
-public class MaintenanceTaskEntity {
+@Entity
+public class MaintenanceTaskEntity extends PanacheEntity {
 
     private Long id;
     private String vin;
     private TaskType type;
     private TaskStatus status;
     private String notes;
+    private TirePosition tirePosition;
+    private List<String> errorCodes;
+    private ScannerType scannerType;
     private LocalDateTime createdAt;
     private LocalDateTime updatedAt;
 
