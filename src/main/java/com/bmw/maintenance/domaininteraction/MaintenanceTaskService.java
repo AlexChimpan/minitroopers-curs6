@@ -5,8 +5,11 @@ import com.bmw.maintenance.domain.TaskStatus;
 import com.bmw.maintenance.domain.TaskType;
 
 import java.util.List;
+import java.util.Map;
 
 import jakarta.enterprise.context.ApplicationScoped;
+import jakarta.enterprise.inject.Instance;
+import jakarta.inject.Inject;
 
 /**
  * Service for creating and managing maintenance tasks.
@@ -15,14 +18,17 @@ import jakarta.enterprise.context.ApplicationScoped;
 public class MaintenanceTaskService {
 
     private final MaintenanceTasks maintenanceTasks;
+    @Inject
+    private final Instance<MaintenanceTaskFactory> maintenanceTaskFactories;
 
     /**
      * Creates a new service instance.
      *
      * @param maintenanceTasks backing repository
      */
-    public MaintenanceTaskService(MaintenanceTasks maintenanceTasks) {
+    public MaintenanceTaskService(MaintenanceTasks maintenanceTasks, Instance<MaintenanceTaskFactory> maintenanceTaskFactories) {
         this.maintenanceTasks = maintenanceTasks;
+        this.maintenanceTaskFactories = maintenanceTaskFactories;
     }
 
     /**
@@ -33,18 +39,17 @@ public class MaintenanceTaskService {
      * @param notes optional notes
      * @return created task id
      */
-    public Long createTask(String vin, TaskType type, String notes) {
-        MaintenanceTask task = switch (type) {
-            case OIL_CHANGE -> MaintenanceTask.createOilChange(vin, notes);
-            case BRAKE_INSPECTION -> MaintenanceTask.createBrakeInspection(vin, notes);
-            case TIRE_SERVICE -> MaintenanceTask.createTireService(vin,notes);
-            case DIAGNOSTIC_SCAN -> MaintenanceTask.createDiagnosticScan(vin,notes);
-        };
+    public Long createTask(String vin, TaskType type, String notes, Map<String, Object> additionalData) {
+        MaintenanceTaskFactory factory = maintenanceTaskFactories
+                .stream()
+                .filter(c -> c.getSupportedType() == type)
+                .findFirst()
+                .orElseThrow(() -> new IllegalStateException("No suitable creator found"));
 
+        MaintenanceTask task = factory.create(vin, notes, additionalData);
         MaintenanceTask created = maintenanceTasks.create(task);
         return created.getTaskId();
     }
-
     /**
      * Updates the status of a task.
      *

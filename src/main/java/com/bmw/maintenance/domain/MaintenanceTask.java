@@ -47,9 +47,6 @@ public class MaintenanceTask {
                 .type(TaskType.OIL_CHANGE)
                 .status(TaskStatus.IN_PROGRESS)
                 .notes(notes)
-                .tirePosition(TirePosition.ALL)
-                .errorCodes(List.of())
-                .scannerType(ScannerType.BASIC)
                 .build();
         task.validateBusinessRules();
         return task;
@@ -69,9 +66,6 @@ public class MaintenanceTask {
                 .type(TaskType.BRAKE_INSPECTION)
                 .status(TaskStatus.IN_PROGRESS)
                 .notes(notes)
-                .tirePosition(TirePosition.ALL)
-                .errorCodes(List.of())
-                .scannerType(ScannerType.BASIC)
                 .build();
         task.validateBusinessRules();
         return task;
@@ -84,15 +78,13 @@ public class MaintenanceTask {
      * @return a new \`MaintenanceTask\` configured for tire service
      * @throws IllegalStateException if required business rules are not met
      */
-    public static MaintenanceTask createTireService(String vin, String notes) {
+    public static MaintenanceTask createTireService(String vin, String notes,TirePosition tirePosition) {
         MaintenanceTask task = MaintenanceTask.builder()
                 .vin(vin)
                 .type(TaskType.TIRE_SERVICE)
                 .status(TaskStatus.IN_PROGRESS)
                 .notes(notes)
-                .tirePosition(TirePosition.ALL)
-                .errorCodes(List.of())
-                .scannerType(ScannerType.BASIC)
+                .tirePosition(tirePosition)
                 .build();
         task.validateBusinessRules();
         return task;
@@ -105,15 +97,14 @@ public class MaintenanceTask {
      * @return a new \`MaintenanceTask\` configured for diagnostic scan
      * @throws IllegalStateException if required business rules are not met
      */
-    public static MaintenanceTask createDiagnosticScan(String vin, String notes) {
+    public static MaintenanceTask createDiagnosticScan(String vin, String notes, ScannerType scannerType,List<String> errorCodes) {
         MaintenanceTask task = MaintenanceTask.builder()
                 .vin(vin)
                 .type(TaskType.DIAGNOSTIC_SCAN)
                 .status(TaskStatus.IN_PROGRESS)
                 .notes(notes)
-                .tirePosition(TirePosition.ALL)
-                .errorCodes(List.of())
-                .scannerType(ScannerType.BASIC)
+                .errorCodes(errorCodes)
+                .scannerType(scannerType)
                 .build();
         task.validateBusinessRules();
         return task;
