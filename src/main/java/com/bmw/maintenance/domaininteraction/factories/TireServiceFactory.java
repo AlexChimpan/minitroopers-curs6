@@ -4,9 +4,11 @@ import com.bmw.maintenance.domain.MaintenanceTask;
 import com.bmw.maintenance.domain.TaskType;
 import com.bmw.maintenance.domain.TirePosition;
 import com.bmw.maintenance.domaininteraction.TaskFactory;
+import jakarta.enterprise.context.ApplicationScoped;
 
 import java.util.Map;
 
+@ApplicationScoped
 public class TireServiceFactory implements TaskFactory {
     @Override
     public boolean supports(TaskType type) {

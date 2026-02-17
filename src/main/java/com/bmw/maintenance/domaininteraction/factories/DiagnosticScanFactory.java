@@ -4,11 +4,13 @@ import com.bmw.maintenance.domain.MaintenanceTask;
 import com.bmw.maintenance.domain.ScannerType;
 import com.bmw.maintenance.domain.TaskType;
 import com.bmw.maintenance.domaininteraction.TaskFactory;
+import jakarta.enterprise.context.ApplicationScoped;
 
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 
+@ApplicationScoped
 public class DiagnosticScanFactory implements TaskFactory {
     @Override
     public boolean supports(TaskType type) {

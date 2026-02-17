@@ -114,6 +114,7 @@ public class MaintenanceTask {
                 .status(TaskStatus.IN_PROGRESS)
                 .notes(notes)
                 .scannerType(scannerType)
+                .errorCodes(errorCodes)
                 .build();
         task.validateBusinessRules();
         return task;
