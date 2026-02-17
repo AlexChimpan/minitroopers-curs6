@@ -1,0 +1,10 @@
+CREATE TABLE tasks (
+    id BIGINT NOT NULL,
+    vin VARCHAR(255) NOT NULL,
+    task_type SMALLINT NOT NULL CHECK (task_type BETWEEN 0 AND 8),
+    task_status SMALLINT NOT NULL CHECK (task_status BETWEEN 0 AND 3),
+    notes VARCHAR(255),
+    PRIMARY KEY (id)
+);
+
+CREATE SEQUENCE tasks_SEQ START WITH 1 INCREMENT BY 50;
