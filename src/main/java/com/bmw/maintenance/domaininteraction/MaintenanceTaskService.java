@@ -37,6 +37,8 @@ public class MaintenanceTaskService {
         MaintenanceTask task = switch (type) {
             case OIL_CHANGE -> MaintenanceTask.createOilChange(vin, notes);
             case BRAKE_INSPECTION -> MaintenanceTask.createBrakeInspection(vin, notes);
+            case TIRE_SERVICE -> MaintenanceTask.createTireService(vin,notes);
+            case DIAGNOSTIC_SCAN -> MaintenanceTask.createDiagnosticScan(vin,notes);
         };
 
         MaintenanceTask created = maintenanceTasks.create(task);

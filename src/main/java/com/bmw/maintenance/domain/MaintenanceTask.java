@@ -5,6 +5,8 @@ import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
 
+import java.util.List;
+
 /**
  * Domain entity representing a maintenance task for a vehicle.
  * <p>
@@ -26,6 +28,9 @@ public class MaintenanceTask {
     private TaskType type;
     private TaskStatus status;
     private String notes;
+    private TirePosition tirePosition;
+    private List<String> errorCodes;
+    private ScannerType scannerType;
 
 
     /**
@@ -42,6 +47,9 @@ public class MaintenanceTask {
                 .type(TaskType.OIL_CHANGE)
                 .status(TaskStatus.IN_PROGRESS)
                 .notes(notes)
+                .tirePosition(TirePosition.ALL)
+                .errorCodes(List.of())
+                .scannerType(ScannerType.BASIC)
                 .build();
         task.validateBusinessRules();
         return task;
@@ -61,6 +69,51 @@ public class MaintenanceTask {
                 .type(TaskType.BRAKE_INSPECTION)
                 .status(TaskStatus.IN_PROGRESS)
                 .notes(notes)
+                .tirePosition(TirePosition.ALL)
+                .errorCodes(List.of())
+                .scannerType(ScannerType.BASIC)
+                .build();
+        task.validateBusinessRules();
+        return task;
+    }
+    /**
+     * Creates a new tire service task in the \`IN\_PROGRESS\` status.
+     *
+     * @param vin   vehicle identification number
+     * @param notes optional notes for the task
+     * @return a new \`MaintenanceTask\` configured for tire service
+     * @throws IllegalStateException if required business rules are not met
+     */
+    public static MaintenanceTask createTireService(String vin, String notes) {
+        MaintenanceTask task = MaintenanceTask.builder()
+                .vin(vin)
+                .type(TaskType.TIRE_SERVICE)
+                .status(TaskStatus.IN_PROGRESS)
+                .notes(notes)
+                .tirePosition(TirePosition.ALL)
+                .errorCodes(List.of())
+                .scannerType(ScannerType.BASIC)
+                .build();
+        task.validateBusinessRules();
+        return task;
+    }
+    /**
+     * Creates a new diagnostic scan task in the \`IN\_PROGRESS\` status.
+     *
+     * @param vin   vehicle identification number
+     * @param notes optional notes for the task
+     * @return a new \`MaintenanceTask\` configured for diagnostic scan
+     * @throws IllegalStateException if required business rules are not met
+     */
+    public static MaintenanceTask createDiagnosticScan(String vin, String notes) {
+        MaintenanceTask task = MaintenanceTask.builder()
+                .vin(vin)
+                .type(TaskType.DIAGNOSTIC_SCAN)
+                .status(TaskStatus.IN_PROGRESS)
+                .notes(notes)
+                .tirePosition(TirePosition.ALL)
+                .errorCodes(List.of())
+                .scannerType(ScannerType.BASIC)
                 .build();
         task.validateBusinessRules();
         return task;
@@ -74,15 +127,22 @@ public class MaintenanceTask {
      * @param type   task type
      * @param status task status
      * @param notes  optional notes for the task
+     * @param tirePosition tire position for tire service tasks
+     * @param errorCodes list of error codes for diagnostic scan tasks
+     * @param scannerType type of scanner used for diagnostic scan tasks
      * @return a \`MaintenanceTask\` populated from stored values
      */
-    public static MaintenanceTask reconstitute(Long taskId, String vin, TaskType type, TaskStatus status, String notes) {
+    public static MaintenanceTask reconstitute(Long taskId, String vin, TaskType type, TaskStatus status, String notes,
+                                               TirePosition tirePosition, List<String> errorCodes, ScannerType scannerType) {
         return MaintenanceTask.builder()
                 .taskId(taskId)
                 .vin(vin)
                 .type(type)
                 .status(status)
                 .notes(notes)
+                .tirePosition(tirePosition)
+                .errorCodes(errorCodes)
+                .scannerType(scannerType)
                 .build();
     }
 
