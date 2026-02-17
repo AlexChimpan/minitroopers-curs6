@@ -1,12 +1,14 @@
 package com.bmw.maintenance.domaininteraction;
 
-import com.bmw.maintenance.domain.MaintenanceTask;
-import com.bmw.maintenance.domain.TaskStatus;
-import com.bmw.maintenance.domain.TaskType;
+import com.bmw.maintenance.domain.*;
 
 import java.util.List;
+import java.util.Map;
 
 import jakarta.enterprise.context.ApplicationScoped;
+import jakarta.enterprise.inject.Instance;
+import jakarta.inject.Inject;
+import org.jboss.jandex.Main;
 
 /**
  * Service for creating and managing maintenance tasks.
@@ -15,14 +17,17 @@ import jakarta.enterprise.context.ApplicationScoped;
 public class MaintenanceTaskService {
 
     private final MaintenanceTasks maintenanceTasks;
+    private final Instance<TaskFactory> taskFactories;
 
     /**
      * Creates a new service instance.
      *
      * @param maintenanceTasks backing repository
      */
-    public MaintenanceTaskService(MaintenanceTasks maintenanceTasks) {
+    @Inject
+    public MaintenanceTaskService(MaintenanceTasks maintenanceTasks, Instance<TaskFactory> taskFactories) {
         this.maintenanceTasks = maintenanceTasks;
+        this.taskFactories = taskFactories;
     }
 
     /**
@@ -31,14 +36,16 @@ public class MaintenanceTaskService {
      * @param vin   vehicle identification number
      * @param type  task type
      * @param notes optional notes
+     * @param parameters additional parameters required for task creation, to easily support different task types without changing the method signature
      * @return created task id
      */
-    public Long createTask(String vin, TaskType type, String notes) {
-        MaintenanceTask task = switch (type) {
-            case OIL_CHANGE -> MaintenanceTask.createOilChange(vin, notes);
-            case BRAKE_INSPECTION -> MaintenanceTask.createBrakeInspection(vin, notes);
-        };
+    public Long createTask(String vin, TaskType type, String notes, Map<String, Object> parameters) {
+        TaskFactory factory = taskFactories.stream()
+                .filter(taskFactory -> taskFactory.supports(type))
+                .findFirst()
+                .orElseThrow(() -> new IllegalArgumentException("Unsupported task type: " + type));
 
+        MaintenanceTask task = factory.create(vin, notes, parameters);
         MaintenanceTask created = maintenanceTasks.create(task);
         return created.getTaskId();
     }
@@ -70,7 +77,7 @@ public class MaintenanceTaskService {
      * @return task or null if not found
      */
     public MaintenanceTask getTaskById(String taskId) {
-        return maintenanceTasks.findById(taskId);
+        return maintenanceTasks.findTaskById(taskId);
     }
 
     /**
@@ -83,6 +90,6 @@ public class MaintenanceTaskService {
         if (vin != null && !vin.isBlank()) {
             return maintenanceTasks.findByVin(vin);
         }
-        return maintenanceTasks.findAll();
+        return maintenanceTasks.findAllTasks();
     }
 }

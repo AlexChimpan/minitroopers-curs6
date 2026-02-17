@@ -1,2 +1,10 @@
 .idea/**
 target/
+*.iml
+*.class
+*.log
+*.jar
+# ignore other xml than pom.xml
+*.xml
+# add pom.xml to git
+!pom.xml

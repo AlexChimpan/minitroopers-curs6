@@ -1,7 +1,9 @@
 package com.bmw.maintenance.api;
 
+import com.bmw.maintenance.domain.ScannerType;
 import com.bmw.maintenance.domain.TaskStatus;
 import com.bmw.maintenance.domain.TaskType;
+import com.bmw.maintenance.domain.TirePosition;
 import com.bmw.maintenance.domaininteraction.MaintenanceTaskService;
 
 import jakarta.enterprise.context.ApplicationScoped;
@@ -16,6 +18,10 @@ import jakarta.ws.rs.core.MediaType;
 import jakarta.ws.rs.core.Response;
 
 import lombok.NoArgsConstructor;
+
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 
 /**
  * REST resource for managing maintenance tasks.
@@ -44,8 +50,22 @@ public class MaintenanceTaskResource {
     @POST
     @Path("/")
     public Response createTask(@Valid CreateTaskRequest request) {
-        Long taskId = maintenanceTaskService.createTask(request.vin(), request.type(), request.notes());
-
+        Map<String, Object> parameters = new HashMap<>();
+        if(request.tirePosition != null){
+            parameters.put("tirePosition", request.tirePosition);
+        }
+        if(request.scannerType != null){
+            parameters.put("scannerType", request.scannerType);
+        }
+        if(request.errorCodes != null){
+            parameters.put("errorCodes", request.errorCodes);
+        }
+        Long taskId = maintenanceTaskService.createTask(
+                request.vin(),
+                request.type(),
+                request.notes(),
+                parameters
+        );
         return Response.status(Response.Status.CREATED).entity(taskId).build();
     }
 
@@ -113,11 +133,12 @@ public class MaintenanceTaskResource {
             @NotBlank
             @Size(min = 17, max = 17, message = "VIN must be 17 characters")
             String vin,
-
             @NotNull
             TaskType type,
-
-            String notes
+            String notes,
+            TirePosition tirePosition,
+            ScannerType scannerType,
+            List<String> errorCodes
     ) {}
 
     /**
