@@ -36,6 +36,7 @@ public class MaintenanceTaskService {
      * @param vin   vehicle identification number
      * @param type  task type
      * @param notes optional notes
+     * @param parameters additional parameters required for task creation, to easily support different task types without changing the method signature
      * @return created task id
      */
     public Long createTask(String vin, TaskType type, String notes, Map<String, Object> parameters) {

@@ -8,6 +8,8 @@ import jakarta.enterprise.context.ApplicationScoped;
 
 import java.util.Map;
 
+
+
 @ApplicationScoped
 public class TireServiceFactory implements TaskFactory {
     @Override
