@@ -12,6 +12,9 @@ import java.time.LocalDateTime;
 import java.util.List;
 import java.util.stream.Collectors;
 
+/**
+ * Db implementation of {@link MaintenanceTasks} for managing maintenance tasks.
+ */
 @ApplicationScoped
 public class MaintenanceTaskDbRepository implements MaintenanceTasks,PanacheRepository<MaintenanceTaskEntity> {
 
