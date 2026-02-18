@@ -35,7 +35,7 @@ public class MaintenanceTaskDbRepository implements MaintenanceTasks,PanacheRepo
     @Override
     public MaintenanceTask updateStatus(String taskId, TaskStatus newStatus) {
         Long id=Long.parseLong(taskId);
-        MaintenanceTaskEntity entity=findById(id);
+        MaintenanceTaskEntity entity = findById(id);
         if (entity == null) {
             throw new NotFoundException("Task not found: " + taskId);
         }

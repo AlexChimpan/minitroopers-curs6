@@ -4,9 +4,11 @@ import com.bmw.maintenance.domain.MaintenanceTask;
 import com.bmw.maintenance.domain.TaskStatus;
 import com.bmw.maintenance.domain.TaskType;
 
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import com.bmw.maintenance.domain.TirePosition;
 import jakarta.enterprise.context.ApplicationScoped;
 import jakarta.enterprise.inject.Instance;
 import jakarta.inject.Inject;
@@ -50,6 +52,7 @@ public class MaintenanceTaskService {
         MaintenanceTask created = maintenanceTasks.create(task);
         return created.getTaskId();
     }
+
     /**
      * Updates the status of a task.
      *

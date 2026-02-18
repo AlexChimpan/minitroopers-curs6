@@ -34,9 +34,7 @@ public class TireServiceFactory implements MaintenanceTaskFactory {
      */
     @Override
     public MaintenanceTask create(String vin, String notes, Map<String, Object> additionalData) {
-        if (!(additionalData.get("tireCondition") instanceof TirePosition tireCondition)) {
-            throw new IllegalArgumentException("Invalid tire condition provided");
-        }
-        return MaintenanceTask.createTireService(vin, notes, tireCondition);
+        TirePosition tirePosition = TirePosition.valueOf(((String) additionalData.get("tirePosition")).toUpperCase());
+        return MaintenanceTask.createTireService(vin, notes, tirePosition);
     }
 }

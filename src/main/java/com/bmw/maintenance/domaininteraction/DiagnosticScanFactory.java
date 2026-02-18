@@ -35,10 +35,8 @@ public class DiagnosticScanFactory implements MaintenanceTaskFactory {
      */
     @Override
     public MaintenanceTask create(String vin, String notes, Map<String, Object> additionalData) {
-        if (!(additionalData.get("scannerType") instanceof ScannerType scannerType)) {
-            throw new IllegalArgumentException("Invalid scanner type provided");
-        }
-        List<String> errorCodes = (List<String>) additionalData.get("errorCodes");
-        return MaintenanceTask.createDiagnosticScan(vin, notes, scannerType, errorCodes);
+            ScannerType scannerType = ScannerType.valueOf(((String) additionalData.get("scannerType")).toUpperCase());
+            List<String> errorCodes = (List<String>) additionalData.get("errorCodes");
+            return MaintenanceTask.createDiagnosticScan(vin, notes, scannerType, errorCodes);
     }
 }
