@@ -16,9 +16,12 @@ import jakarta.ws.rs.NotFoundException;
 
 /**
  * In-memory implementation of {@link MaintenanceTasks} for managing maintenance tasks.
+ * <p>
+ * Kept for development/reference. Not annotated as a CDI bean so that the
+ * Panache/H2-based {@link MaintenanceTaskRepository} is used in production.
+ * </p>
  */
-@ApplicationScoped
-public class MaintenanceTaskInMemoryRepository implements MaintenanceTasks {
+class MaintenanceTaskInMemoryRepository implements MaintenanceTasks {
 
     private final Map<Long, MaintenanceTaskEntity> storage = new ConcurrentHashMap<>();
     private final AtomicLong idCounter = new AtomicLong(1L);
@@ -32,9 +35,9 @@ public class MaintenanceTaskInMemoryRepository implements MaintenanceTasks {
     @Override
     public MaintenanceTask create(MaintenanceTask task) {
         MaintenanceTaskEntity entity = mapper.toEntity(task);
-        entity.setId(idCounter.getAndIncrement());
+        entity.id = idCounter.getAndIncrement();
 
-        storage.put(entity.getId(), entity);
+        storage.put(entity.id, entity);
 
         return mapper.toDomain(entity);
     }
@@ -85,7 +88,7 @@ public class MaintenanceTaskInMemoryRepository implements MaintenanceTasks {
     }
 
     @Override
-    public List<MaintenanceTask> findAll() {
+    public List<MaintenanceTask> findAllTasks() {
         return storage.values().stream()
                 .map(mapper::toDomain)
                 .collect(Collectors.toList());

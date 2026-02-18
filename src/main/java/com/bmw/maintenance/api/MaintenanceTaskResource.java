@@ -1,7 +1,9 @@
 package com.bmw.maintenance.api;
 
+import com.bmw.maintenance.domain.ScannerType;
 import com.bmw.maintenance.domain.TaskStatus;
 import com.bmw.maintenance.domain.TaskType;
+import com.bmw.maintenance.domain.TirePosition;
 import com.bmw.maintenance.domaininteraction.MaintenanceTaskService;
 
 import jakarta.enterprise.context.ApplicationScoped;
@@ -11,11 +13,22 @@ import jakarta.validation.Valid;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Size;
-import jakarta.ws.rs.*;
+import jakarta.ws.rs.Consumes;
+import jakarta.ws.rs.GET;
+import jakarta.ws.rs.POST;
+import jakarta.ws.rs.PUT;
+import jakarta.ws.rs.Path;
+import jakarta.ws.rs.PathParam;
+import jakarta.ws.rs.Produces;
+import jakarta.ws.rs.QueryParam;
 import jakarta.ws.rs.core.MediaType;
 import jakarta.ws.rs.core.Response;
 
 import lombok.NoArgsConstructor;
+
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 
 /**
  * REST resource for managing maintenance tasks.
@@ -44,7 +57,23 @@ public class MaintenanceTaskResource {
     @POST
     @Path("/")
     public Response createTask(@Valid CreateTaskRequest request) {
-        Long taskId = maintenanceTaskService.createTask(request.vin(), request.type(), request.notes());
+        Map<String, Object> additionalData = new HashMap<>();
+        if (request.tirePosition() != null) {
+            additionalData.put("tirePosition", request.tirePosition());
+        }
+        if (request.scannerType() != null) {
+            additionalData.put("scannerType", request.scannerType());
+        }
+        if (request.errorCodes() != null) {
+            additionalData.put("errorCodes", request.errorCodes());
+        }
+
+        Long taskId = maintenanceTaskService.createTask(
+                request.vin(),
+                request.type(),
+                request.notes(),
+                additionalData
+        );
 
         return Response.status(Response.Status.CREATED).entity(taskId).build();
     }
@@ -117,7 +146,13 @@ public class MaintenanceTaskResource {
             @NotNull
             TaskType type,
 
-            String notes
+            String notes,
+
+            TirePosition tirePosition,
+
+            ScannerType scannerType,
+
+            List<String> errorCodes
     ) {}
 
     /**
