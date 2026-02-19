@@ -1,8 +1,10 @@
 package com.bmw.maintenance.domaininteraction;
 
 import com.bmw.maintenance.domain.MaintenanceTask;
+import com.bmw.maintenance.domain.ScannerType;
 import com.bmw.maintenance.domain.TaskStatus;
 import com.bmw.maintenance.domain.TaskType;
+import com.bmw.maintenance.domain.TirePosition;
 
 import java.util.List;
 
@@ -31,12 +33,17 @@ public class MaintenanceTaskService {
      * @param vin   vehicle identification number
      * @param type  task type
      * @param notes optional notes
+     * @param tirePosition optional tire position for tire service
+     * @param errorCodes optional error codes for diagnostic scan
+     * @param scannerType optional scanner type for diagnostic scan
      * @return created task id
      */
-    public Long createTask(String vin, TaskType type, String notes) {
+    public Long createTask(String vin, TaskType type, String notes, TirePosition tirePosition, List<String> errorCodes, ScannerType scannerType) {
         MaintenanceTask task = switch (type) {
             case OIL_CHANGE -> MaintenanceTask.createOilChange(vin, notes);
             case BRAKE_INSPECTION -> MaintenanceTask.createBrakeInspection(vin, notes);
+            case TIRE_SERVICE -> MaintenanceTask.createTireService(vin, notes, tirePosition);
+            case DIAGNOSTIC_SCAN -> MaintenanceTask.createDiagnosticScan(vin, notes, errorCodes, scannerType);
         };
 
         MaintenanceTask created = maintenanceTasks.create(task);
