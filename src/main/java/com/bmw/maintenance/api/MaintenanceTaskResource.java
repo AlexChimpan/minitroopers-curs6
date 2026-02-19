@@ -1,12 +1,10 @@
 package com.bmw.maintenance.api;
 
-import com.bmw.maintenance.domain.ScannerType;
 import com.bmw.maintenance.domain.TaskStatus;
 import com.bmw.maintenance.domain.TaskType;
-import com.bmw.maintenance.domain.TirePosition;
 import com.bmw.maintenance.domaininteraction.MaintenanceTaskService;
 
-import java.util.List;
+import java.util.Map;
 
 import jakarta.enterprise.context.ApplicationScoped;
 import jakarta.inject.Inject;
@@ -48,7 +46,7 @@ public class MaintenanceTaskResource {
     @POST
     @Path("/")
     public Response createTask(@Valid CreateTaskRequest request) {
-        Long taskId = maintenanceTaskService.createTask(request.vin(), request.type(), request.notes(), request.tirePosition(), request.errorCodes(), request.scannerType());
+        Long taskId = maintenanceTaskService.createTask(request.vin(), request.type(), request.notes(), request.additionalData());
 
         return Response.status(Response.Status.CREATED).entity(taskId).build();
     }
@@ -109,9 +107,10 @@ public class MaintenanceTaskResource {
     /**
      * Request payload for creating a task.
      *
-     * @param vin vehicle identification number
-     * @param type task type
-     * @param notes optional notes
+     * @param vin            vehicle identification number
+     * @param type           task type
+     * @param notes          optional notes
+     * @param additionalData type-specific parameters (e.g. tirePosition, errorCodes, scannerType)
      */
     public record CreateTaskRequest(
             @NotBlank
@@ -123,11 +122,7 @@ public class MaintenanceTaskResource {
 
             String notes,
 
-            TirePosition tirePosition,
-
-            List<String> errorCodes,
-                
-            ScannerType scannerType
+            Map<String, Object> additionalData
     ) {}
 
     /**

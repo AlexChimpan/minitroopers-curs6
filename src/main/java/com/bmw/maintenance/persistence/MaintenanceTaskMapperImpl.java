@@ -34,11 +34,11 @@ public class MaintenanceTaskMapperImpl implements MaintenanceTaskMapper {
                 task.getType(),
                 task.getStatus(),
                 task.getNotes(),
-                LocalDateTime.now(),
-                LocalDateTime.now(),
                 task.getTirePosition(),
                 task.getErrorCodes(),
-                task.getScannerType()
+                task.getScannerType(),
+                LocalDateTime.now(),
+                LocalDateTime.now()
         );
     }
 }
