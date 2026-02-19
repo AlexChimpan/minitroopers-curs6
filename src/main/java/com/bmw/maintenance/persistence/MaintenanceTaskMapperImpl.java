@@ -14,12 +14,15 @@ public class MaintenanceTaskMapperImpl implements MaintenanceTaskMapper {
 
     @Override
     public MaintenanceTask toDomain(MaintenanceTaskEntity entity) {
-        return  MaintenanceTask.reconstitute(
+        return MaintenanceTask.reconstitute(
                 entity.getId(),
                 entity.getVin(),
                 entity.getType(),
                 entity.getStatus(),
-                entity.getNotes()
+                entity.getNotes(),
+                entity.getTirePosition(),
+                entity.getErrorCodes(),
+                entity.getScannerType()
         );
     }
 
@@ -31,6 +34,9 @@ public class MaintenanceTaskMapperImpl implements MaintenanceTaskMapper {
                 task.getType(),
                 task.getStatus(),
                 task.getNotes(),
+                task.getTirePosition(),
+                task.getErrorCodes(),
+                task.getScannerType(),
                 LocalDateTime.now(),
                 LocalDateTime.now()
         );

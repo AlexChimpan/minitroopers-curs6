@@ -4,6 +4,8 @@ import com.bmw.maintenance.domain.TaskStatus;
 import com.bmw.maintenance.domain.TaskType;
 import com.bmw.maintenance.domaininteraction.MaintenanceTaskService;
 
+import java.util.Map;
+
 import jakarta.enterprise.context.ApplicationScoped;
 import jakarta.inject.Inject;
 import jakarta.transaction.Transactional;
@@ -44,7 +46,7 @@ public class MaintenanceTaskResource {
     @POST
     @Path("/")
     public Response createTask(@Valid CreateTaskRequest request) {
-        Long taskId = maintenanceTaskService.createTask(request.vin(), request.type(), request.notes());
+        Long taskId = maintenanceTaskService.createTask(request.vin(), request.type(), request.notes(), request.additionalData());
 
         return Response.status(Response.Status.CREATED).entity(taskId).build();
     }
@@ -105,9 +107,10 @@ public class MaintenanceTaskResource {
     /**
      * Request payload for creating a task.
      *
-     * @param vin vehicle identification number
-     * @param type task type
-     * @param notes optional notes
+     * @param vin            vehicle identification number
+     * @param type           task type
+     * @param notes          optional notes
+     * @param additionalData type-specific parameters (e.g. tirePosition, errorCodes, scannerType)
      */
     public record CreateTaskRequest(
             @NotBlank
@@ -117,7 +120,9 @@ public class MaintenanceTaskResource {
             @NotNull
             TaskType type,
 
-            String notes
+            String notes,
+
+            Map<String, Object> additionalData
     ) {}
 
     /**
