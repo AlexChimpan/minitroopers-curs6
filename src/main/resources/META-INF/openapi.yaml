@@ -34,12 +34,31 @@ paths:
                   vin: "WBA3B5C50DF123456"
                   type: "OIL_CHANGE"
                   notes: "Regular oil change service"
+                  additionalData: {}
               brakeInspection:
                 summary: Brake Inspection Task
                 value:
                   vin: "WBA3B5C50DF123456"
                   type: "BRAKE_INSPECTION"
-                  notes: "Annual brake inspection"
+                  notes: "Customer reports squeaking noise when braking"
+                  additionalData: {}
+              tireService:
+                summary: Tire Service Task
+                value:
+                  vin: "WBA3B5C50DF123456"
+                  type: "TIRE_SERVICE"
+                  notes: "Replace front tires"
+                  additionalData:
+                    tirePosition: "FRONT_LEFT"
+              diagnosticScan:
+                summary: Diagnostic Scan Task
+                value:
+                  vin: "WBA3B5C50DF123456"
+                  type: "DIAGNOSTIC_SCAN"
+                  notes: "Check engine light on"
+                  additionalData:
+                    scannerType: "ADVANCED"
+                    errorCodes: ["P0300", "P0171"]
       responses:
         '201':
           description: Task created successfully
@@ -212,6 +231,14 @@ components:
           type: string
           description: Additional notes for the task
           example: "Customer reported squeaking noise"
+        additionalData:
+          type: object
+          additionalProperties: true
+          description: Additional task-specific data (tirePosition, scannerType, errorCodes, etc.)
+          example:
+            tirePosition: "FRONT_LEFT"
+            scannerType: "ADVANCED"
+            errorCodes: ["P0300", "P0171"]
 
     UpdateStatusRequest:
       type: object
@@ -249,12 +276,22 @@ components:
         notes:
           type: string
           example: "Regular maintenance"
+        additionalData:
+          type: object
+          additionalProperties: true
+          description: Additional task-specific data
+          example:
+            tirePosition: "FRONT_LEFT"
+            scannerType: "ADVANCED"
+            errorCodes: ["P0300", "P0171"]
 
     TaskType:
       type: string
       enum:
         - OIL_CHANGE
         - BRAKE_INSPECTION
+        - TIRE_SERVICE
+        - DIAGNOSTIC_SCAN
       description: Type of maintenance task
 
     TaskStatus:
@@ -265,6 +302,23 @@ components:
         - CANCELLED
         - PENDING
       description: Current status of the task
+
+    TirePosition:
+      type: string
+      enum:
+        - FRONT_LEFT
+        - FRONT_RIGHT
+        - REAR_LEFT
+        - REAR_RIGHT
+        - ALL
+      description: Position of the tire for tire service tasks
+
+    ScannerType:
+      type: string
+      enum:
+        - BASIC
+        - ADVANCED
+      description: Type of scanner used for diagnostic scans
 
     ErrorResponse:
       type: object
