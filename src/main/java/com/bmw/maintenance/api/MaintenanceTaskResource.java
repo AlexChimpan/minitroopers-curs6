@@ -6,6 +6,7 @@ import com.bmw.maintenance.domain.TaskType;
 import com.bmw.maintenance.domain.TirePosition;
 import com.bmw.maintenance.domaininteraction.CreateTaskCommand;
 import com.bmw.maintenance.domaininteraction.MaintenanceTaskService;
+import com.bmw.maintenance.domaininteraction.Result;
 
 import jakarta.enterprise.context.ApplicationScoped;
 import jakarta.inject.Inject;
@@ -65,9 +66,13 @@ public class MaintenanceTaskResource {
                 request.errorCodes()
         );
 
-        Long taskId = maintenanceTaskService.createTask(command);
+        Result<Long> result = maintenanceTaskService.createTask(command);
 
-        return Response.status(Response.Status.CREATED).entity(taskId).build();
+        if (result.success()) {
+            return Response.status(Response.Status.CREATED).entity(result.value()).build();
+        }
+
+        return Response.status(Response.Status.BAD_REQUEST).entity(result.errors()).build();
     }
 
     /**

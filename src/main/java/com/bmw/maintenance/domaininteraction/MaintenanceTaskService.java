@@ -33,12 +33,16 @@ public class MaintenanceTaskService {
      * Creates a maintenance task for a vehicle.
      *
      * @param command encapsulated creation data
-     * @return created task id
+     * @return result wrapping the created task id or validation errors
      */
-    public Long createTask(CreateTaskCommand command) {
-        MaintenanceTask task = creatorFactory.get(command.type()).create(command);
-        MaintenanceTask created = maintenanceTasks.create(task);
-        return created.getTaskId();
+    public Result<Long> createTask(CreateTaskCommand command) {
+        try {
+            MaintenanceTask task = creatorFactory.get(command.type()).create(command);
+            MaintenanceTask created = maintenanceTasks.create(task);
+            return Result.ok(created.getTaskId());
+        } catch (IllegalArgumentException | IllegalStateException ex) {
+            return Result.failure(new DomainError("VALIDATION_ERROR", ex.getMessage()));
+        }
     }
 
     /**

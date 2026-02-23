@@ -14,14 +14,13 @@ import java.util.List;
 public class MaintenanceTaskRepository implements MaintenanceTasks {
 
     @Inject MaintenanceTaskPanacheRepository panache;
-    @Inject MaintenanceTaskMapper mapper; // since your mapper is @ApplicationScoped
+    @Inject MaintenanceTaskMapper mapper;
 
     @Override
     @Transactional
     public MaintenanceTask create(MaintenanceTask task) {
         MaintenanceTaskEntity entity = mapper.toEntity(task);
 
-        // INSERT
         if (entity.id == null) {
             entity.setCreatedAt(LocalDateTime.now());
             entity.setUpdatedAt(LocalDateTime.now());
@@ -29,7 +28,6 @@ public class MaintenanceTaskRepository implements MaintenanceTasks {
             return mapper.toDomain(entity);
         }
 
-        // UPDATE existing
         MaintenanceTaskEntity existing = panache.findById(entity.id);
         if (existing == null) {
             throw new IllegalArgumentException("Task not found: " + entity.id);
