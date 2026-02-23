@@ -4,6 +4,10 @@ import lombok.AccessLevel;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
+import lombok.Setter;
+
+import java.util.List;
+import java.util.Objects;
 
 /**
  * Domain entity representing a maintenance task for a vehicle.
@@ -18,6 +22,7 @@ import lombok.Getter;
  */
 @Builder
 @Getter
+@Setter
 @AllArgsConstructor(access = AccessLevel.PRIVATE)
 public class MaintenanceTask {
 
@@ -27,43 +32,75 @@ public class MaintenanceTask {
     private TaskStatus status;
     private String notes;
 
+    private TirePosition tirePosition;
+    private ScannerType scannerType;
+    private List<String> errorCodes;
 
-    /**
-     * Creates a new oil change task in the \`IN\_PROGRESS\` status.
-     *
-     * @param vin   vehicle identification number
-     * @param notes optional notes for the task
-     * @return a new \`MaintenanceTask\` configured for oil change
-     * @throws IllegalStateException if required business rules are not met
-     */
+    public MaintenanceTask() {}
+
     public static MaintenanceTask createOilChange(String vin, String notes) {
         MaintenanceTask task = MaintenanceTask.builder()
                 .vin(vin)
                 .type(TaskType.OIL_CHANGE)
-                .status(TaskStatus.IN_PROGRESS)
+                .status(TaskStatus.NEW)
                 .notes(notes)
                 .build();
-        task.validateBusinessRules();
-        return task;
+        return task.validateBusinessRules();
     }
 
-    /**
-     * Creates a new brake inspection task in the \`IN\_PROGRESS\` status.
-     *
-     * @param vin   vehicle identification number
-     * @param notes optional notes for the task
-     * @return a new \`MaintenanceTask\` configured for brake inspection
-     * @throws IllegalStateException if required business rules are not met
-     */
     public static MaintenanceTask createBrakeInspection(String vin, String notes) {
         MaintenanceTask task = MaintenanceTask.builder()
                 .vin(vin)
                 .type(TaskType.BRAKE_INSPECTION)
-                .status(TaskStatus.IN_PROGRESS)
+                .status(TaskStatus.NEW)
                 .notes(notes)
                 .build();
-        task.validateBusinessRules();
-        return task;
+        return task.validateBusinessRules();
+    }
+
+    /**
+     * Creates a new tire service task.
+     *
+     * @param vin          vehicle identification number
+     * @param notes        optional notes for the task
+     * @param tirePosition required tire position for this service
+     * @return a new {@code MaintenanceTask} configured for tire service
+     */
+    public static MaintenanceTask createTireService(String vin, String notes, TirePosition tirePosition) {
+        MaintenanceTask task = MaintenanceTask.builder()
+                .vin(vin)
+                .type(TaskType.TIRE_SERVICE)
+                .status(TaskStatus.NEW)
+                .notes(notes)
+                .tirePosition(tirePosition)
+                .build();
+        return task.validateBusinessRules();
+    }
+
+    /**
+     * Creates a new diagnostic scan task.
+     *
+     * @param vin         vehicle identification number
+     * @param notes       optional notes for the task
+     * @param scannerType required scanner type
+     * @param errorCodes  optional list of error codes
+     * @return a new {@code MaintenanceTask} configured for diagnostic scan
+     */
+    public static MaintenanceTask createDiagnosticScan(
+            String vin,
+            String notes,
+            ScannerType scannerType,
+            List<String> errorCodes
+    ) {
+        MaintenanceTask task = MaintenanceTask.builder()
+                .vin(vin)
+                .type(TaskType.DIAGNOSTIC_SCAN)
+                .status(TaskStatus.NEW)
+                .notes(notes)
+                .scannerType(scannerType)
+                .errorCodes(errorCodes)
+                .build();
+        return task.validateBusinessRules();
     }
 
     /**
@@ -73,22 +110,60 @@ public class MaintenanceTask {
      * @param vin    vehicle identification number
      * @param type   task type
      * @param status task status
-     * @param notes  optional notes for the task
-     * @return a \`MaintenanceTask\` populated from stored values
+     * @param notes        optional notes for the task
+     * @param tirePosition tire position for tire services
+     * @param scannerType  scanner type for diagnostic scans
+     * @param errorCodes   diagnostic error codes, if any
+     * @return a {@code MaintenanceTask} populated from stored values
      */
-    public static MaintenanceTask reconstitute(Long taskId, String vin, TaskType type, TaskStatus status, String notes) {
+    public static MaintenanceTask reconstitute(
+            Long taskId,
+            String vin,
+            TaskType type,
+            TaskStatus status,
+            String notes,
+            TirePosition tirePosition,
+            ScannerType scannerType,
+            List<String> errorCodes
+    ) {
         return MaintenanceTask.builder()
                 .taskId(taskId)
                 .vin(vin)
                 .type(type)
                 .status(status)
                 .notes(notes)
+                .tirePosition(tirePosition)
+                .scannerType(scannerType)
+                .errorCodes(errorCodes)
                 .build();
     }
 
-    private void validateBusinessRules() {
-        if (type == null || status == null) {
-            throw new IllegalStateException("Task must have a type and status");
+    public void start() {
+        if (status != TaskStatus.NEW) {
+            throw new IllegalStateException("Only NEW tasks can be started");
         }
+        this.status = TaskStatus.IN_PROGRESS;
+    }
+
+    public void complete() {
+        if (status != TaskStatus.IN_PROGRESS) {
+            throw new IllegalStateException("Only IN_PROGRESS tasks can be completed");
+        }
+        this.status = TaskStatus.DONE;
+    }
+    private MaintenanceTask validateBusinessRules() {
+        Objects.requireNonNull(vin, "VIN must not be null");
+        Objects.requireNonNull(type, "Task type must not be null");
+        Objects.requireNonNull(status, "Task status must not be null");
+
+        if (type == TaskType.TIRE_SERVICE && tirePosition == null) {
+            throw new IllegalStateException("tirePosition is required for TIRE_SERVICE tasks");
+        }
+
+        if (type == TaskType.DIAGNOSTIC_SCAN && scannerType == null) {
+            throw new IllegalStateException("scannerType is required for DIAGNOSTIC_SCAN tasks");
+        }
+
+        return this;
     }
 }

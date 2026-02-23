@@ -7,6 +7,7 @@ import com.bmw.maintenance.domain.TaskType;
 import java.util.List;
 
 import jakarta.enterprise.context.ApplicationScoped;
+import jakarta.inject.Inject;
 
 /**
  * Service for creating and managing maintenance tasks.
@@ -15,32 +16,33 @@ import jakarta.enterprise.context.ApplicationScoped;
 public class MaintenanceTaskService {
 
     private final MaintenanceTasks maintenanceTasks;
+    private final MaintenanceTaskCreatorFactory creatorFactory;
 
     /**
      * Creates a new service instance.
      *
      * @param maintenanceTasks backing repository
      */
-    public MaintenanceTaskService(MaintenanceTasks maintenanceTasks) {
+    @Inject
+    public MaintenanceTaskService(MaintenanceTasks maintenanceTasks, MaintenanceTaskCreatorFactory creatorFactory) {
         this.maintenanceTasks = maintenanceTasks;
+        this.creatorFactory = creatorFactory;
     }
 
     /**
      * Creates a maintenance task for a vehicle.
      *
-     * @param vin   vehicle identification number
-     * @param type  task type
-     * @param notes optional notes
-     * @return created task id
+     * @param command encapsulated creation data
+     * @return result wrapping the created task id or validation errors
      */
-    public Long createTask(String vin, TaskType type, String notes) {
-        MaintenanceTask task = switch (type) {
-            case OIL_CHANGE -> MaintenanceTask.createOilChange(vin, notes);
-            case BRAKE_INSPECTION -> MaintenanceTask.createBrakeInspection(vin, notes);
-        };
-
-        MaintenanceTask created = maintenanceTasks.create(task);
-        return created.getTaskId();
+    public Result<Long> createTask(CreateTaskCommand command) {
+        try {
+            MaintenanceTask task = creatorFactory.get(command.type()).create(command);
+            MaintenanceTask created = maintenanceTasks.create(task);
+            return Result.ok(created.getTaskId());
+        } catch (IllegalArgumentException | IllegalStateException ex) {
+            return Result.failure(new DomainError("VALIDATION_ERROR", ex.getMessage()));
+        }
     }
 
     /**
@@ -50,7 +52,17 @@ public class MaintenanceTaskService {
      * @param newStatus new status
      */
     public void updateTaskStatus(String taskId, TaskStatus newStatus) {
-        maintenanceTasks.updateStatus(taskId, newStatus);
+        MaintenanceTask task = maintenanceTasks.findById(taskId);
+
+        switch (newStatus) {
+            case IN_PROGRESS -> task.start();
+            case DONE -> task.complete();
+            case NEW -> {
+                throw new IllegalArgumentException("Transition back to NEW is not supported");
+            }
+        }
+
+        maintenanceTasks.create(task);
     }
 
     /**
@@ -83,6 +95,6 @@ public class MaintenanceTaskService {
         if (vin != null && !vin.isBlank()) {
             return maintenanceTasks.findByVin(vin);
         }
-        return maintenanceTasks.findAll();
+        return maintenanceTasks.findAllTasks();
     }
 }
