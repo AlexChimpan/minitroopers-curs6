@@ -151,7 +151,6 @@ public class MaintenanceTask {
         }
         this.status = TaskStatus.DONE;
     }
-
     private MaintenanceTask validateBusinessRules() {
         Objects.requireNonNull(vin, "VIN must not be null");
         Objects.requireNonNull(type, "Task type must not be null");

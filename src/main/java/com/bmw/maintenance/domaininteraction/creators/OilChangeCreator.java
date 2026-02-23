@@ -6,8 +6,6 @@ import com.bmw.maintenance.domaininteraction.CreateTaskCommand;
 import com.bmw.maintenance.domaininteraction.MaintenanceTaskCreator;
 import jakarta.enterprise.context.ApplicationScoped;
 
-import java.util.Map;
-
 @ApplicationScoped
 public class OilChangeCreator implements MaintenanceTaskCreator {
 
