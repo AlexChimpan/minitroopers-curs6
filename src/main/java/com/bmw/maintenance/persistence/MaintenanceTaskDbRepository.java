@@ -36,13 +36,11 @@ public class MaintenanceTaskDbRepository implements MaintenanceTasks,PanacheRepo
     public MaintenanceTask updateStatus(String taskId, TaskStatus newStatus) {
         Long id=Long.parseLong(taskId);
         MaintenanceTaskEntity entity = findById(id);
-        if (entity == null) {
-            throw new NotFoundException("Task not found: " + taskId);
-        }
 
         entity.setStatus(newStatus);
         entity.setUpdatedAt(LocalDateTime.now());
         persist(entity);
+
         return mapper.toDomain(entity);
     }
 
@@ -84,8 +82,7 @@ public class MaintenanceTaskDbRepository implements MaintenanceTasks,PanacheRepo
 
     @Override
     public List<MaintenanceTask> findByVin(String vin) {
-        return listAll().stream()
-                .filter(entity->vin.equals(entity.getVin()))
+        return list("vin,vin").stream()
                 .map(mapper::toDomain)
                 .collect(Collectors.toList());
     }

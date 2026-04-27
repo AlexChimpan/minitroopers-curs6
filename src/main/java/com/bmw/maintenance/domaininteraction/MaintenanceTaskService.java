@@ -20,6 +20,7 @@ import jakarta.inject.Inject;
 public class MaintenanceTaskService {
 
     private final MaintenanceTasks maintenanceTasks;
+
     @Inject
     private final Instance<MaintenanceTaskFactory> maintenanceTaskFactories;
 

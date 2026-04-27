@@ -8,14 +8,14 @@ import java.time.LocalDateTime;
 import java.util.List;
 
 import com.bmw.maintenance.domain.TirePosition;
-import jakarta.persistence.Entity;
-import jakarta.persistence.GeneratedValue;
-import jakarta.persistence.GenerationType;
-import jakarta.persistence.Id;
+import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
+import org.hibernate.annotations.CreationTimestamp;
+import org.hibernate.annotations.UpdateTimestamp;
+import org.hibernate.validator.constraints.Length;
 
 /**
  * Persistence entity for maintenance tasks.
@@ -26,7 +26,6 @@ import lombok.Setter;
 @AllArgsConstructor
 @Entity
 public class MaintenanceTaskEntity {
-
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
@@ -37,7 +36,10 @@ public class MaintenanceTaskEntity {
     private TirePosition tirePosition;
     private List<String> errorCodes;
     private ScannerType scannerType;
+    @CreationTimestamp
+    @Column(nullable = false, updatable = false)
     private LocalDateTime createdAt;
+    @UpdateTimestamp
+    @Column(nullable = false)
     private LocalDateTime updatedAt;
-
 }
